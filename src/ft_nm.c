@@ -12,69 +12,76 @@
 
 #include "ft_nm.h"
 
-void	print_output(int nsyms, int symoff, int stroff, void *ptr)
+void	dump_section_64(struct section_64* sect)
 {
-	int					i;
-	char				*stringtable;
-	struct nlist_64		*array;
+	ft_printf("section64: sectname=[%s] addr=[%p]\n", sect->sectname, sect->addr);
+}
 
-	array = ptr + symoff;
-	stringtable = (void*)ptr + stroff;
-	for (i = 0; i < nsyms; ++i)
+void	dump_segment_64(struct segment_command_64 *seg, void *file)
+{
+	uint32_t			nsects;
+	uint32_t			i;
+	struct section_64	*sect;
+
+	(void)file;
+	nsects = seg->nsects;
+	ft_printf("LC_SEGMENT_64: segname=[%s], nsects=[%i]\n", seg->segname, nsects);
+	sect = (void*)seg + sizeof(*seg);
+	for (i = 0; i < nsects; i++)
 	{
-		ft_printf("%s\n", stringtable + array[i].n_un.n_strx);
+		dump_section_64(sect);
+		sect = (void*)sect + sect->size;
 	}
 }
 
-void	handle_64(void *ptr)
+void	dump_symtab(struct symtab_command *sym, void *file)
 {
-	int						ncmds;
-	int						i;
-	struct mach_header_64	*header;
-	struct load_command		*lc;
-	struct symtab_command	*sym;
+	int					i;
+	int					nsyms;
+	char				*stringtable;
+	struct nlist_64		*array;
 
-	header = (struct mach_header_64*)ptr;
+	nsyms = sym->nsyms;
+	array = file + sym->symoff;
+	stringtable = (void*)file + sym->stroff;
+	ft_printf("{und}LC_SYMTAB with %d symbols:{eoc}\n", sym->nsyms);
+	for (i = 0; i < nsyms; ++i)
+		ft_printf("%s\n", stringtable + array[i].n_un.n_strx);
+}
+
+void	dump_load_commands(void *file)
+{
+	uint32_t				ncmds;
+	uint32_t				i;
+	struct load_command		*lc;
+	struct mach_header_64	*header = file;
+
 	ncmds = header->ncmds;
-	lc = ptr + sizeof(*header);
+	lc = file + sizeof(*header);
 	for (i = 0; i < ncmds; i++)
 	{
+		ft_printf("{yel}load_command #%d: %i{eoc}\n", i, lc->cmd);
 		if (lc->cmd == LC_SYMTAB)
-		{
-			sym = (struct symtab_command*)lc;
-			/* ft_printf("nb symbols: %d\n", sym->nsyms); */
-			print_output(sym->nsyms, sym->symoff, sym->stroff, ptr);
-			break ;
-		}
+			dump_symtab((struct symtab_command*)lc, file);
+		else if (lc->cmd == LC_SEGMENT_64)
+			dump_segment_64((struct segment_command_64*)lc, file);
 		lc = (void*)lc + lc->cmdsize;
 	}
 }
 
-void	nm(char *ptr)
+void	nm(char *file)
 {
-	unsigned int	magic_number;
+	uint32_t	magic = *(int *)file;
+	int			is_64 = IS_MAGIC_64(magic);
 
-	magic_number = *(int *)ptr;
-	if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
-	{
-		ft_printf("I'm a 64 it binary\n");
-		handle_64(ptr);
-	}
-	else if (magic_number == MH_MAGIC)
-	{
-		ft_printf("I'm a 32 it binary\n");
-		/* handle_32(ptr); */
-	}
-	else
-	{
-		ft_printf("unknown architecure\n");
-	}
+	ft_printf("{gre}I'm %s a 64 bit binary{eoc}\n", is_64 ? "" : "not");
+	dump_load_commands(file);
 }
 
 int		main(int ac, char **av)
 {
 	int			fd;
-	char		*ptr;
+	char		*file;
 	struct stat	buf;
 
 	if (ac != 2)
@@ -86,11 +93,11 @@ int		main(int ac, char **av)
 		return (1);
 	if ((fstat(fd, &buf)) < 0)
 		return (1);
-	if ((ptr = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
+	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
 			== MAP_FAILED)
 		return (1);
-	nm(ptr);
-	if (munmap(ptr, buf.st_size))
+	nm(file);
+	if (munmap(file, buf.st_size))
 		return (1);
 	return (0);
 }

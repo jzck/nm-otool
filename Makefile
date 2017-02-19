@@ -42,7 +42,7 @@ INDEX		=	0
 all:
 	@make -j $(NAME)
 
-$(NAME): $(OBJ_DIR) $(OBJS)
+$(NAME): $(LIBFT_LIB) $(OBJ_DIR) $(OBJS)
 	@$(CC) $(FLAGS) $(D_FLAGS) \
 		-I $(INC_DIR) \
 		-I $(LIBFT_INC) \
@@ -72,13 +72,24 @@ clean:
 	@$(RM) $(OBJ_DIR)
 	@printf "\r\e[38;5;202m✖ clean $(NAME).\e[0m\e[K\n"
 
+cleanlib:
+	@make -C $(LIBFT_DIR) clean
+
 fclean: clean
 	@$(RM) $(NAME)
 	@printf "\r\e[38;5;196m❌ fclean $(NAME).\e[0m\e[K\n"
 
+fcleanlib:		cleanlib
+	@make -C $(LIBFT_DIR) fclean
+
 re: fclean all
 
-.PHONY: all clean fclean re
+relib:			fcleanlib $(LIBFT_LIB)
+
+$(LIBFT_LIB):
+	@make -C $(LIBFT_DIR)
+
+.PHONY: fclean clean re relib cleanlib fcleanlib
 
 -include $(OBJS:.o=.d)
 

@@ -22,4 +22,6 @@
 # include <sys/stat.h>
 # include <stdlib.h>
 
+# define IS_MAGIC_64(x)	(x == MH_MAGIC_64 || x == MH_CIGAM_64)
+
 #endif
