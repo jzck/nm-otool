@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/02/19 03:56:34 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/02/19 05:32:56 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,19 @@ void	nm(char *ptr)
 	unsigned int	magic_number;
 
 	magic_number = *(int *)ptr;
-	if (magic_number == MH_MAGIC_64)
+	if (magic_number == MH_MAGIC_64 || magic_number == MH_CIGAM_64)
 	{
-		/* ft_printf("je suis un binaire 64 bits\n"); */
+		ft_printf("I'm a 64 it binary\n");
 		handle_64(ptr);
+	}
+	else if (magic_number == MH_MAGIC)
+	{
+		ft_printf("I'm a 32 it binary\n");
+		/* handle_32(ptr); */
+	}
+	else
+	{
+		ft_printf("unknown architecure\n");
 	}
 }
 
