@@ -12,9 +12,9 @@
 
 #include "ft_nm.h"
 
-void	dump_section_64(struct section_64* sect)
+void	dump_section_64(struct section_64 *sect)
 {
-	ft_printf("section64: sectname=[%s] addr=[%p]\n", sect->sectname, sect->addr);
+	ft_printf("section64: segname=[%s], sectname=[%s]\n", sect->segname, sect->sectname);
 }
 
 void	dump_segment_64(struct segment_command_64 *seg, void *file)
@@ -26,11 +26,11 @@ void	dump_segment_64(struct segment_command_64 *seg, void *file)
 	(void)file;
 	nsects = seg->nsects;
 	ft_printf("LC_SEGMENT_64: segname=[%s], nsects=[%i]\n", seg->segname, nsects);
-	sect = (void*)seg + sizeof(*seg);
+	sect = (void*)(seg + 1);
 	for (i = 0; i < nsects; i++)
 	{
 		dump_section_64(sect);
-		sect = (void*)sect + sect->size;
+		sect = sect + 1;
 	}
 }
 
@@ -57,7 +57,7 @@ void	dump_load_commands(void *file)
 	struct mach_header_64	*header = file;
 
 	ncmds = header->ncmds;
-	lc = file + sizeof(*header);
+	lc = (void*)(header + 1);
 	for (i = 0; i < ncmds; i++)
 	{
 		ft_printf("{yel}load_command #%d: %i{eoc}\n", i, lc->cmd);
