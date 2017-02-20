@@ -6,11 +6,11 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/02/19 05:32:56 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/02/20 15:18:30 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_nm.h"
+#include "ft_nm_otool.h"
 
 void	dump_section_64(struct section_64 *sect)
 {
@@ -34,22 +34,7 @@ void	dump_segment_64(struct segment_command_64 *seg, void *file)
 	}
 }
 
-void	dump_symtab(struct symtab_command *sym, void *file)
-{
-	int					i;
-	int					nsyms;
-	char				*stringtable;
-	struct nlist_64		*array;
-
-	nsyms = sym->nsyms;
-	array = file + sym->symoff;
-	stringtable = (void*)file + sym->stroff;
-	ft_printf("{und}LC_SYMTAB with %d symbols:{eoc}\n", sym->nsyms);
-	for (i = 0; i < nsyms; ++i)
-		ft_printf("%s\n", stringtable + array[i].n_un.n_strx);
-}
-
-void	dump_load_commands(void *file)
+void	dump_mach_header_64(void *file)
 {
 	uint32_t				ncmds;
 	uint32_t				i;
@@ -58,24 +43,48 @@ void	dump_load_commands(void *file)
 
 	ncmds = header->ncmds;
 	lc = (void*)(header + 1);
+	ft_printf("{blu}{inv}mach_header_64 w/ [%d] load_commands{eoc}\n", ncmds);
 	for (i = 0; i < ncmds; i++)
 	{
-		ft_printf("{yel}load_command #%d: %i{eoc}\n", i, lc->cmd);
-		if (lc->cmd == LC_SYMTAB)
+		ft_printf("{yel}{inv}load_command #%d: %#x{eoc}\n", i, lc->cmd);
+		if (lc->cmd & LC_SYMTAB)
 			dump_symtab((struct symtab_command*)lc, file);
-		else if (lc->cmd == LC_SEGMENT_64)
+		else if (lc->cmd & LC_SEGMENT_64)
 			dump_segment_64((struct segment_command_64*)lc, file);
 		lc = (void*)lc + lc->cmdsize;
 	}
 }
 
-void	nm(char *file)
+void	dump_fat_header(void *file)
+{
+	struct fat_header	*header = file;
+	struct fat_arch		*arch;
+	int					i;
+	int					nfat_arch;
+
+	nfat_arch = header->nfat_arch;
+	arch = (void*)(header + 1);
+	ft_printf("{yel}{inv}FAT header w/ [%i] architures{eoc}\n", nfat_arch);
+	for (i = 0; i < nfat_arch; i++)
+	{
+		ft_printf("CPU type=[%i]", arch->cputype);
+		dump_mach_header_64(file + arch->offset);
+		arch += 1;
+	}
+}
+
+void	nm(void *file)
 {
 	uint32_t	magic = *(int *)file;
+	int			is_fat = IS_FAT(magic);
 	int			is_64 = IS_MAGIC_64(magic);
 
-	ft_printf("{gre}I'm %s a 64 bit binary{eoc}\n", is_64 ? "" : "not");
-	dump_load_commands(file);
+	if (is_fat)
+		dump_fat_header(file);
+	else if (is_64)
+		dump_mach_header_64(file);
+	else
+		ft_printf("{red}unsupported architecture:{eoc} magic = %#x\n", magic);
 }
 
 int		main(int ac, char **av)

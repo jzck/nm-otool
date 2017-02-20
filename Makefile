@@ -6,11 +6,11 @@
 #    By: jhalford <jack@crans.org>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/19 03:29:38 by jhalford          #+#    #+#              #
-#    Updated: 2017/02/19 03:59:47 by jhalford         ###   ########.fr        #
+#    Updated: 2017/02/20 15:38:45 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		=	ft_nm
+NAME		=	ft_nm ft_otool
 
 CC			=	gcc
 MKDIR		=	mkdir -p
@@ -31,34 +31,54 @@ SRC_DIR		=	src/
 INC_DIR		=	includes/
 OBJ_DIR		=	objs/
 
+FT_NM_OBJ	=	$(OBJ_DIR)ft_nm.o
+FT_OTOOL_OBJ=	$(OBJ_DIR)ft_otool.o
+
 SRC_BASE	=	\
-ft_nm.c
+dump_symtab.c\
+ft_nm.c\
+ft_otool.c\
+hexdump.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))
-NB			=	$(words $(SRC_BASE))
+NB			=	$(words $(SRC_BASE) $(NAME))
 INDEX		=	0
 
-all:
-	@make -j $(NAME)
+OBJS		:=	$(filter-out $(FT_NM_OBJ), $(OBJS))
+OBJS		:=	$(filter-out $(FT_OTOOL_OBJ), $(OBJS))
 
-$(NAME): $(LIBFT_LIB) $(OBJ_DIR) $(OBJS)
+all: $(NAME)
+
+ft_nm: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_NM_OBJ)
 	@$(CC) $(FLAGS) $(D_FLAGS) \
 		-I $(INC_DIR) \
 		-I $(LIBFT_INC) \
 		$(LIBS) \
-		$(LIBFT_LIB) $(OBJS) \
-		-o $(NAME)
+		$(LIBFT_LIB) $(OBJS) $(FT_NM_OBJ) \
+		-o $@
 	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
-	@strip -x $(NAME)
-	@printf "\r\e[48;5;15;38;5;25m✅ MAKE $(NAME)\e[0m\e[K\n"
+	@strip -x $@
+	@printf "\r\e[48;5;15;38;5;25m✅ MAKE $@\e[0m\e[K\n"
+
+ft_otool: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_OTOOL_OBJ)
+	@$(CC) $(FLAGS) $(D_FLAGS) \
+		-I $(INC_DIR) \
+		-I $(LIBFT_INC) \
+		$(LIBS) \
+		$(LIBFT_LIB) $(OBJS) $(FT_OTOOL_OBJ) \
+		-o $@
+	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
+	@strip -x $@
+	@printf "\r\e[48;5;15;38;5;25m✅ MAKE $@\e[0m\e[K\n"
+
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
 	@$(eval DONE=$(shell echo $$(($(INDEX)*20/$(NB)))))
 	@$(eval PERCENT=$(shell echo $$(($(INDEX)*100/$(NB)))))
 	@$(eval COLOR=$(shell echo $$(($(PERCENT)%35+196))))
 	@$(eval TO_DO=$(shell echo $$((20-$(INDEX)*20/$(NB)))))
-	@printf "\r\e[38;5;11m⌛ MAKE %10.10s : %2d%% \e[48;5;%dm%*s\e[0m%*s\e[48;5;255m \e[0m \e[38;5;11m %*s\e[0m\e[K" $(NAME) $(PERCENT) $(COLOR) $(DONE) "" $(TO_DO) "" $(DELTA) "$@"
+	@printf "\r\e[38;5;11m⌛ MAKE %10.10s : %2d%% \e[48;5;%dm%*s\e[0m%*s\e[48;5;255m \e[0m \e[38;5;11m %*s\e[0m\e[K" $@ $(PERCENT) $(COLOR) $(DONE) "" $(TO_DO) "" $(DELTA) "$@"
 	@$(CC) $(FLAGS) -MMD -c $< -o $@\
 		-I $(INC_DIR) \
 		-I $(LIBFT_INC)
