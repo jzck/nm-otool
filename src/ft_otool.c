@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/02/20 15:27:00 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/02/20 16:27:56 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,15 +46,16 @@ void	otool(void *file)
 	int			is_64 = IS_MAGIC_64(magic);
 	struct section_64			*sect;
 
-	sect = NULL;
 	if (is_fat)
 		ft_printf("fat binary: not supported yet.\n");
 	else if (is_64)
+	{
 		sect = get_text_section(file);
+		ft_printf("Contents of (__TEXT,__text) section\n");
+		hexdump(file, sect->offset, sect->size);
+	}
 	else
 		ft_printf("{red}unsupported architecture:{eoc} magic = %#x\n", magic);
-	ft_printf("Contents of (__TEXT,__text) section\n");
-	hexdump(file + sect->offset, sect->size, 0);
 }
 
 int		main(int ac, char **av)
