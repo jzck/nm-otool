@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/02/20 16:10:27 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/01 17:52:35 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # define IS_MAGIC_64(x)	(x == MH_MAGIC_64 || x == MH_CIGAM_64)
 # define IS_FAT(x)		(x == FAT_MAGIC || x == FAT_CIGAM)
 
-void	dump_symtab(struct symtab_command *sym, void *file);
+void	dump_symtab(struct symtab_command *sym, struct dysymtab_command *dysym, void *file);
 void	*hexdump(void *addr, unsigned int offset, unsigned int size);
 
 #endif

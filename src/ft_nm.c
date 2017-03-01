@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/02/20 16:45:26 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/01 17:53:31 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,25 +34,34 @@ void	dump_segment_64(struct segment_command_64 *seg, void *file)
 	}
 }
 
+void	print_output(int nsyms, int symoff, int stroff, void *ptr);
+
 void	dump_mach_header_64(void *file)
 {
 	uint32_t				ncmds;
 	uint32_t				i;
 	struct load_command		*lc;
+	struct symtab_command	*symtab;
+	struct dysymtab_command	*dysymtab;
 	struct mach_header_64	*header = file;
 
 	ncmds = header->ncmds;
 	lc = (void*)(header + 1);
-	ft_printf("{blu}{inv}mach_header_64 w/ [%d] load_commands{eoc}\n", ncmds);
+	/* ft_printf("{blu}{inv}mach_header_64 w/ [%d] load_commands{eoc}\n", ncmds); */
 	for (i = 0; i < ncmds; i++)
 	{
-		ft_printf("{yel}{inv}load_command #%d: %#x{eoc}\n", i, lc->cmd);
-		if (lc->cmd & LC_SYMTAB)
-			dump_symtab((struct symtab_command*)lc, file);
-		else if (lc->cmd & LC_SEGMENT_64)
-			dump_segment_64((struct segment_command_64*)lc, file);
+		/* ft_printf("{yel}{inv}load_command #%d: %#x{eoc}\n", i, lc->cmd); */
+		if (lc->cmd == LC_SYMTAB)
+			symtab = (struct symtab_command*)lc;
+			/* dump_symtab((struct symtab_command*)lc, file); */
+		else if (lc->cmd == LC_DYSYMTAB)
+			dysymtab = (struct dysymtab_command*)lc;
+			/* dump_dysymtab((struct dysymtab_command*)lc, file); */
+		/* else if (lc->cmd == LC_SEGMENT_64) */
+		/* 	dump_segment_64((struct segment_command_64*)lc, file); */
 		lc = (void*)lc + lc->cmdsize;
 	}
+	dump_symtab(symtab, dysymtab, file);
 }
 
 void	dump_fat_header(void *file)
