@@ -6,7 +6,7 @@
 #    By: jhalford <jack@crans.org>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/19 03:29:38 by jhalford          #+#    #+#              #
-#    Updated: 2017/03/01 16:00:29 by jhalford         ###   ########.fr        #
+#    Updated: 2017/03/23 17:04:19 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,10 +35,12 @@ FT_NM_OBJ	=	$(OBJ_DIR)ft_nm.o
 FT_OTOOL_OBJ=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
-dump_symtab.c\
+fetch_header.c\
 ft_nm.c\
 ft_otool.c\
-hexdump.c
+get_symbols.c\
+hexdump.c\
+symprint.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))
@@ -51,6 +53,7 @@ OBJS		:=	$(filter-out $(FT_OTOOL_OBJ), $(OBJS))
 all: $(NAME)
 
 ft_nm: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_NM_OBJ)
+	@echo $(FT_NM_OBJ)
 	@$(CC) $(FLAGS) $(D_FLAGS) \
 		-I $(INC_DIR) \
 		-I $(LIBFT_INC) \
@@ -71,7 +74,6 @@ ft_otool: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_OTOOL_OBJ)
 	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
 	@strip -x $@
 	@printf "\r\e[48;5;15;38;5;25m✅ MAKE $@\e[0m\e[K\n"
-
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
 	@$(eval DONE=$(shell echo $$(($(INDEX)*20/$(NB)))))
