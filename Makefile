@@ -40,7 +40,9 @@ ft_nm.c\
 ft_otool.c\
 get_symbols.c\
 hexdump.c\
-symprint.c
+sym_dump.c\
+sym_format.c\
+sym_get.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))

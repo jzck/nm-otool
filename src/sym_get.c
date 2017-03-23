@@ -12,20 +12,21 @@
 
 #include "ft_nm_otool.h"
 
-static t_flag	symtype(uint32_t i, struct dysymtab_command *dysym)
+static t_flag	get_symtype(uint32_t i, struct dysymtab_command *dysym)
 {
-	if (dysym->ilocalsym <= i && i < dysym->ilocalsym + dysym->nlocalsym)
+	if (dysym->ilocalsym <= i && i <= dysym->ilocalsym + dysym->nlocalsym)
 		return (SYM_DEBUG);
-	if (dysym->iextdefsym <= i && i < dysym->iextdefsym + dysym->nextdefsym)
+	if (dysym->iextdefsym <= i && i <= dysym->iextdefsym + dysym->nextdefsym)
 		return (SYM_TEXT);
-	if (dysym->iundefsym <= i && i < dysym->iundefsym + dysym->nundefsym)
+	if (dysym->iundefsym <= i && i <= dysym->iundefsym + dysym->nundefsym)
 		return (SYM_UNDEF);
 	return (0);
 }
 
-t_list			*sym_get(char *file)
+t_list			*get_symbols(char *file)
 {
 	int						i;
+	int						nsyms;
 	char					*stringtable;
 	char					*string;
 	struct nlist_64			*array;
@@ -35,24 +36,24 @@ t_list			*sym_get(char *file)
 	t_list					*symbols;
 
 	fetch_header(&data, file);
-	stringtable = file + data.symtab->stroff;
-	symbols = NULL;
-
-	dump_symtab(data.symtab, file);
-	dump_dysymtab(data.dysymtab, file);
-	/* return (NULL); */
-	i = -1;
+	nsyms = data.symtab->nsyms;
 	array = (struct nlist_64*)(file + data.symtab->symoff);
-	while (++i < (int)data.symtab->nsyms)
+	stringtable = file + data.symtab->stroff;
+	ft_printf("LC_SYMTAB [%d] symbols:\n", data.symtab->nsyms);
+	i = -1;
+	symbols = NULL;
+	while (++i < nsyms)
 	{
 		sym.name = stringtable + array[i].n_un.n_strx;
-		sym.type = symtype(i, data.dysymtab);
+		sym.type = get_symtype(i, data.dysymtab);
 		sym.value = 0;
-		ft_lsteadd(&symbols, ft_lstnew(&sym, sizeof(sym)));
+		ft_lstadd(&symbols, ft_lstnew(&sym, sizeof(sym)));
 	}
 	return (symbols);
-	i = -1;
+	ft_putendl("");
+
 	ref = (struct dylib_reference *)(file + data.dysymtab->indirectsymoff);
+	i = -1;
 	while (++i < (int)data.dysymtab->nindirectsyms)
 	{
 		string = stringtable + array[ref->isym].n_un.n_strx;

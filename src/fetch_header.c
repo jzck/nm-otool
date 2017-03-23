@@ -59,7 +59,7 @@ int		fetch_header(t_machodata *data, void *file)
 
 	if (is_64)
 		fetch_machheader64(data, file);
-	if (is_fat)
+	else if (is_fat)
 		fetch_fatheader(data, file);
 	else
 		ft_printf("{red}unsupported architecture:{eoc} magic = %#x\n", magic);

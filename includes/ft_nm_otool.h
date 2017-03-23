@@ -69,11 +69,14 @@ struct s_symbolmap
 
 extern t_symbolmap	g_symbolmap[];
 
-t_list	*get_symbols(char *file);
+t_list	*sym_get(char *file);
 int		fetch_header(t_machodata *data, void *file);
 
-int		symprint(t_symbol *symbol);
-int		symprint_text(t_symbol *symbol);
+int		sym_format(t_symbol *symbol);
+int		sym_format_text(t_symbolmap map, t_symbol *symbol);
+
+void	dump_symtab(struct symtab_command *symtab, void *file);
+void	dump_dysymtab(struct dysymtab_command *dysymtab, void *file);
 
 void	*hexdump(void *addr, unsigned int offset, unsigned int size);
 

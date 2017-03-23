@@ -12,48 +12,12 @@
 
 #include "ft_nm_otool.h"
 
-t_symbolmap	g_symbolmap[] =
-{
-	{'U', NULL},
-	{'A', NULL},
-	{'T', symprint_text},
-	{'D', NULL},
-	{'B', NULL},
-	{'C', NULL},
-	{'-', NULL},
-	{'S', NULL},
-	{'I', NULL},
-};
-
-void	dump_section_64(struct section_64 *sect)
-{
-	ft_printf("section64: segname=[%s], sectname=[%s]\n",
-			sect->segname, sect->sectname);
-}
-
-void	dump_segment_64(struct segment_command_64 *seg, void *file)
-{
-	uint32_t			nsects;
-	uint32_t			i;
-	struct section_64	*sect;
-
-	(void)file;
-	nsects = seg->nsects;
-	ft_printf("LC_SEGMENT_64: segname=[%s], nsects=[%i]\n", seg->segname, nsects);
-	sect = (void*)(seg + 1);
-	for (i = 0; i < nsects; i++)
-	{
-		dump_section_64(sect);
-		sect = sect + 1;
-	}
-}
-
 void	nm(void *file)
 {
 	t_list		*symbols;
 
-	symbols = get_symbols(file);
-	ft_lstiter(symbols, symprint);
+	symbols = sym_get(file);
+	ft_lstiter(symbols, sym_format);
 }
 
 int		main(int ac, char **av)
