@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/23 17:04:06 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/25 22:50:17 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,32 +33,36 @@ typedef enum e_symtype		t_symtype;
 typedef struct s_symbol		t_symbol;
 typedef struct s_symbolmap	t_symbolmap;
 typedef struct s_machodata	t_machodata;
+typedef struct s_symbol		t_symbol;
 
 enum e_symtype
 {
-	SYM_UNDEF,
+	SYM_UNDF,
 	SYM_ABS,
 	SYM_TEXT,
 	SYM_DATA,
 	SYM_BSS,
 	SYM_COMMON,
-	SYM_DEBUG,
+	SYM_STAB,
 	SYM_OTHER,
-	SYM_INDIRECT,
+	SYM_INDR,
 };
 
 
 struct s_machodata
 {
-	struct symtab_command	*symtab;
-	struct dysymtab_command	*dysymtab;
+	void		*file;
+	t_list		*sects;
+	t_list		*symbols;
+	struct symtab_command *symtab;
 };
 
 struct s_symbol
 {
-	t_symtype	type;
-	long		value;
-	char		*name;
+	t_symtype		type;
+	int				pos;
+	struct nlist_64	nlist;
+	char			*string;
 };
 
 struct s_symbolmap
@@ -68,16 +72,26 @@ struct s_symbolmap
 };
 
 extern t_symbolmap	g_symbolmap[];
+extern t_machodata	*g_data;
 
-t_list	*sym_get(char *file);
-int		fetch_header(t_machodata *data, void *file);
+int			mach_o_parse(t_machodata *data);
+int			fetch_header(t_machodata *data);
 
-int		sym_format(t_symbol *symbol);
-int		sym_format_text(t_symbolmap map, t_symbol *symbol);
+int			symbol_init(t_symbol *symbol,
+				char *stringtable, struct nlist_64 *array, int i);
+int			symbol_set(t_symbol *symbol);
 
-void	dump_symtab(struct symtab_command *symtab, void *file);
-void	dump_dysymtab(struct dysymtab_command *dysymtab, void *file);
+int			sym_format(t_symbol *symbol);
+int			sym_format_undf(t_symbolmap map, t_symbol *symbol);
+int			sym_format_text(t_symbolmap map, t_symbol *symbol);
+int			sym_format_stab(t_symbolmap map, t_symbol *symbol);
 
-void	*hexdump(void *addr, unsigned int offset, unsigned int size);
+void		dump_symbol(t_machodata *data, t_symbol *symbol);
+void		dump_machheader_64(t_machodata *data);
+void		dump_segment_64(t_machodata *data, struct segment_command_64 *seg);
+void		dump_symtab(t_machodata *data, struct symtab_command *symtab);
+void		dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);
+
+void		*hexdump(void *addr, unsigned int offset, unsigned int size);
 
 #endif

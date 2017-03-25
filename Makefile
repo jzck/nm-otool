@@ -35,14 +35,15 @@ FT_NM_OBJ	=	$(OBJ_DIR)ft_nm.o
 FT_OTOOL_OBJ=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
+dump_symtab.c\
 fetch_header.c\
 ft_nm.c\
 ft_otool.c\
-get_symbols.c\
 hexdump.c\
+mach_o_parse.c\
 sym_dump.c\
 sym_format.c\
-sym_get.c
+symbol_init.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))

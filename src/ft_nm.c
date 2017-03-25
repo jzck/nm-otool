@@ -6,18 +6,26 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/23 17:04:13 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/25 22:49:54 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
+t_machodata	*g_data = NULL;
+
 void	nm(void *file)
 {
-	t_list		*symbols;
+	t_machodata	data;
 
-	symbols = sym_get(file);
-	ft_lstiter(symbols, sym_format);
+	data.sects = NULL;
+	data.symbols = NULL;
+	data.file = file;
+	fetch_header(&data);
+	dump_symtab(&data, data.symtab);
+	g_data = &data;
+	ft_lstiter(data.symbols, symbol_set);
+	ft_lstiter(data.symbols, sym_format);
 }
 
 int		main(int ac, char **av)
@@ -27,7 +35,7 @@ int		main(int ac, char **av)
 	struct stat	buf;
 	if (ac != 2)
 	{
-		ft_dprintf(2, "Please give me an arg\n");
+		ft_dprintf(2, "USAGE PLACEHOLDER\n");
 		return (1);
 	}
 	if ((fd = open(av[1], O_RDONLY)) < 0)
