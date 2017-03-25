@@ -40,13 +40,13 @@ void	dump_symbol(t_machodata *data, t_symbol *symbol)
 	sect_name = n_sect ?
 		(*(struct section_64**)ft_lst_at(data->sects, n_sect - 1)->content)->sectname : NULL;
 	DG("check2");
-	ft_printf("%i: %s\n\
-	\t%03b|%b|%x|%b\
-	\t%i(%s) \t%#06x \t%x\n",
-			symbol->pos, symbol->string,
+	ft_printf("%i:\t%03b|%b|%x|%b\
+	\t%i(%s) \t%#06x \t%x %-20s\n",
+			symbol->pos,
 			(n_type & N_STAB) >> 5, (n_type & N_PEXT) >> 4,
 			n_type & N_TYPE, n_type & N_EXT,
-			n_sect, sect_name, n_desc, n_value);
+			n_sect, sect_name, n_desc, n_value,
+			symbol->string);
 }
 
 void	dump_machheader_64(t_machodata *data)

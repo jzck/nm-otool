@@ -43,7 +43,8 @@ hexdump.c\
 mach_o_parse.c\
 sym_dump.c\
 sym_format.c\
-symbol_init.c
+symbol_init.c\
+symbol_sort.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))

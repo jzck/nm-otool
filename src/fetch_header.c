@@ -12,7 +12,7 @@
 
 #include "ft_nm_otool.h"
 
-static void	fetch_symtab(t_machodata *data, struct symtab_command *symtab)
+static void	symtab_parse(t_machodata *data, struct symtab_command *symtab)
 {
 	int					i;
 	t_symbol			symbol;
@@ -26,6 +26,7 @@ static void	fetch_symtab(t_machodata *data, struct symtab_command *symtab)
 	while (++i < (int)symtab->nsyms)
 	{
 		symbol_init(&symbol, stringtable, array, i);
+		symbol_set(&symbol, data);
 		ft_lsteadd(&data->symbols, ft_lstnew(&symbol, sizeof(symbol)));
 	}
 }
@@ -49,7 +50,7 @@ static void	fetch_sects(t_machodata *data, struct segment_command_64 *seg)
 	}
 }
 
-static void	fetch_machheader64(t_machodata *data)
+void	mach_64_parse(t_machodata *data)
 {
 	uint32_t				ncmds;
 	uint32_t				i;
@@ -62,7 +63,7 @@ static void	fetch_machheader64(t_machodata *data)
 	for (i = 0; i < ncmds; i++)
 	{
 		if (lc->cmd == LC_SYMTAB)
-			fetch_symtab(data, (struct symtab_command*)lc);
+			symtab_parse(data, (struct symtab_command*)lc);
 		/* else if (lc->cmd == LC_DYSYMTAB) */
 		/* 	data->dysymtab = (struct dysymtab_command*)lc; */
 		else if (lc->cmd == LC_SEGMENT_64)
@@ -89,19 +90,4 @@ static void	fetch_machheader64(t_machodata *data)
 /* 		arch += 1; */
 /* 	} */
 /* } */
-
-int		fetch_header(t_machodata *data)
-{
-	uint32_t	magic = *(int *)data->file;
-	/* int			is_fat = IS_FAT(magic); */
-	int			is_64 = IS_MAGIC_64(magic);
-
-	if (is_64)
-		fetch_machheader64(data);
-	/* else if (is_fat) */
-	/* 	fetch_fatheader(data); */
-	else
-		ft_printf("{red}unsupported architecture:{eoc} magic = %#x\n", magic);
-	return (0);
-}
 

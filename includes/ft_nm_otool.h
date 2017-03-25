@@ -29,6 +29,11 @@
 # define IS_MAGIC_64(x)	(x == MH_MAGIC_64 || x == MH_CIGAM_64)
 # define IS_FAT(x)		(x == FAT_MAGIC || x == FAT_CIGAM)
 
+# define NM_NSORT		(1 << 0)
+# define NM_ASORT		(1 << 1)
+# define NM_RSORT		(1 << 1)
+
+typedef t_data_template		t_nmdata;
 typedef enum e_symtype		t_symtype;
 typedef struct s_symbol		t_symbol;
 typedef struct s_symbolmap	t_symbolmap;
@@ -62,6 +67,7 @@ struct s_symbol
 	t_symtype		type;
 	int				pos;
 	struct nlist_64	nlist;
+	char			*sect_name;
 	char			*string;
 };
 
@@ -74,23 +80,24 @@ struct s_symbolmap
 extern t_symbolmap	g_symbolmap[];
 extern t_machodata	*g_data;
 
-int			mach_o_parse(t_machodata *data);
-int			fetch_header(t_machodata *data);
+int		mach_o_parse(t_machodata *data);
+int		fetch_header(t_machodata *data);
 
-int			symbol_init(t_symbol *symbol,
+int		symbol_init(t_symbol *symbol,
 				char *stringtable, struct nlist_64 *array, int i);
-int			symbol_set(t_symbol *symbol);
+int		symbol_set(t_symbol *symbol, t_machodata *data);
+int		symbol_sort(t_list **syms, t_flag flag);
 
-int			sym_format(t_symbol *symbol);
-int			sym_format_undf(t_symbolmap map, t_symbol *symbol);
-int			sym_format_text(t_symbolmap map, t_symbol *symbol);
-int			sym_format_stab(t_symbolmap map, t_symbol *symbol);
+int		sym_format(t_symbol *symbol);
+int		sym_format_undf(t_symbolmap map, t_symbol *symbol);
+int		sym_format_text(t_symbolmap map, t_symbol *symbol);
+int		sym_format_stab(t_symbolmap map, t_symbol *symbol);
 
-void		dump_symbol(t_machodata *data, t_symbol *symbol);
-void		dump_machheader_64(t_machodata *data);
-void		dump_segment_64(t_machodata *data, struct segment_command_64 *seg);
-void		dump_symtab(t_machodata *data, struct symtab_command *symtab);
-void		dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);
+void	dump_symbol(t_machodata *data, t_symbol *symbol);
+void	mach_64_parse(t_machodata *data);
+void	dump_segment_64(t_machodata *data, struct segment_command_64 *seg);
+void	dump_symtab(t_machodata *data, struct symtab_command *symtab);
+void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);
 
 void		*hexdump(void *addr, unsigned int offset, unsigned int size);
 

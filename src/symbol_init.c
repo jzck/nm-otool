@@ -23,7 +23,7 @@ int	symbol_init(t_symbol *symbol, char *stringtable, struct nlist_64 *array, int
 	return (0);
 }
 
-int		symbol_set(t_symbol *symbol)
+int		symbol_set(t_symbol *symbol, t_machodata *data)
 {
 	struct nlist_64	nlist;
 	uint8_t			n_type;
@@ -33,9 +33,8 @@ int		symbol_set(t_symbol *symbol)
 	nlist = symbol->nlist;
 	n_type = symbol->nlist.n_type;
 	type_mask = n_type & N_TYPE;
-	sect_name = symbol->nlist.n_sect ?
-		(*(struct section_64**)ft_lst_at(g_data->sects,
-		symbol->nlist.n_sect - 1)->content)->sectname : NULL;
+	symbol->sect_name = symbol->nlist.n_sect ?
+		(*(struct section_64**)ft_lst_at(data->sects, symbol->nlist.n_sect - 1)->content)->sectname : NULL;
 	if (n_type & N_STAB)
 		symbol->type = SYM_STAB;
 	else if (type_mask == N_UNDF && n_type & N_EXT && nlist.n_value != 0)

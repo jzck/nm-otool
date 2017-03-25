@@ -14,39 +14,79 @@
 
 t_machodata	*g_data = NULL;
 
-void	nm(void *file)
+t_cliopts	g_nm_opts[] =
 {
-	t_machodata	data;
+	{'n', NULL, NM_NSORT, NM_ASORT, NULL, 0},
+	{'p', NULL, 0, NM_NSORT | NM_ASORT, NULL, 0},
+	{'r', NULL, NM_RSORT, 0, NULL, 0},
 
-	data.sects = NULL;
-	data.symbols = NULL;
-	data.file = file;
-	fetch_header(&data);
-	dump_symtab(&data, data.symtab);
-	g_data = &data;
-	ft_lstiter(data.symbols, symbol_set);
-	ft_lstiter(data.symbols, sym_format);
+	{'g', NULL, 0, 0, NULL, 0},
+	{'u', NULL, 0, 0, NULL, 0},
+	{'a', NULL, 0, 0, NULL, 0},
+	{'U', NULL, 0, 0, NULL, 0},
+	{'o', NULL, 0, 0, NULL, 0},
+	{'A', NULL, 0, 0, NULL, 0},
+	{'m', NULL, 0, 0, NULL, 0},
+	{'x', NULL, 0, 0, NULL, 0},
+	{'j', NULL, 0, 0, NULL, 0},
+};
+
+void	mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
+{
+	t_machodata		mach;
+
+	mach.sects = NULL;
+	mach.symbols = NULL;
+	mach.file = file;
+	mach_64_parse(&mach);
+	dump_symtab(&mach, mach.symtab);
+	symbol_sort(&mach.symbols, data->flag);
+	ft_lstiter(mach.symbols, sym_format);
+}
+
+int		nm(void *file, t_nmdata *data)
+{
+	uint32_t	magic = *(int *)file;
+	int			is_fat = IS_FAT(magic);
+	int			is_64 = IS_MAGIC_64(magic);
+
+	if (is_64)
+	{
+		ft_printf("{red}unsupported architecture:{eoc} magic = %#x (FAT)\n", magic);
+		mach_64_dump(file, data);
+	}
+	else if (is_fat)
+		ft_printf("{red}unsupported architecture:{eoc} magic = %#x (FAT)\n", magic);
+	else
+		ft_printf("{red}unsupported architecture:{eoc} magic = %#x\n", magic);
+	return (0);
 }
 
 int		main(int ac, char **av)
 {
-	int			fd;
-	char		*file;
-	struct stat	buf;
-	if (ac != 2)
+	char			*file;
+	t_nmdata		data;
+	int				fd;
+	int				i;
+	struct stat		buf;
+
+	data.flag = NM_ASORT;
+	if (cliopts_get(av, g_nm_opts, &data))
+		return (ft_dprintf(2, "USAGE PLACEHOLDER\n") * 0 + 1);
+	i = 1;
+	while (i < ac && av[i])
 	{
-		ft_dprintf(2, "USAGE PLACEHOLDER\n");
-		return (1);
+		if ((fd = open(av[i], O_RDONLY)) < 0)
+			return (1);
+		if ((fstat(fd, &buf)) < 0)
+			return (1);
+		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
+				== MAP_FAILED)
+			return (1);
+		nm(file, &data);
+		if (munmap(file, buf.st_size))
+			return (1);
+		i++;
 	}
-	if ((fd = open(av[1], O_RDONLY)) < 0)
-		return (1);
-	if ((fstat(fd, &buf)) < 0)
-		return (1);
-	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
-			== MAP_FAILED)
-		return (1);
-	nm(file);
-	if (munmap(file, buf.st_size))
-		return (1);
 	return (0);
 }
