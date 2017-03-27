@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/23 15:56:37 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/25 22:51:09 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/26 19:05:53 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	symtab_parse(t_machodata *data, struct symtab_command *symtab)
 	}
 }
 
-static void	fetch_sects(t_machodata *data, struct segment_command_64 *seg)
+static void	seg_64_parse(t_machodata *data, struct segment_command_64 *seg)
 {
 	uint32_t			nsects;
 	uint32_t			i;
@@ -41,11 +41,7 @@ static void	fetch_sects(t_machodata *data, struct segment_command_64 *seg)
 	sect = (void*)(seg + 1);
 	for (i = 0; i < nsects; i++)
 	{
-		/* DG("sect at %p (%s)", sect, sect->sectname); */
-		/* DG("data->sects at %p", ft_lstlast(data->sects)); */
 		ft_lsteadd(&data->sects, ft_lstnew(&sect, sizeof(sect)));
-		/* DG("data->sects at %p -> %p", ft_lstlast(data->sects), *(struct section_64*)ft_lstlast(data->sects)->content); */
-		/* DG("------------------"); */
 		sect = sect + 1;
 	}
 }
@@ -64,10 +60,10 @@ void	mach_64_parse(t_machodata *data)
 	{
 		if (lc->cmd == LC_SYMTAB)
 			symtab_parse(data, (struct symtab_command*)lc);
-		/* else if (lc->cmd == LC_DYSYMTAB) */
-		/* 	data->dysymtab = (struct dysymtab_command*)lc; */
+		else if (lc->cmd == LC_DYSYMTAB)
+			data->dysymtab = (struct dysymtab_command*)lc;
 		else if (lc->cmd == LC_SEGMENT_64)
-			fetch_sects(data, (struct segment_command_64*)lc);
+			seg_64_parse(data, (struct segment_command_64*)lc);
 		lc = (void*)lc + lc->cmdsize;
 	}
 }

@@ -6,7 +6,7 @@
 #    By: jhalford <jack@crans.org>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/19 03:29:38 by jhalford          #+#    #+#              #
-#    Updated: 2017/03/23 17:04:19 by jhalford         ###   ########.fr        #
+#    Updated: 2017/03/26 15:37:30 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,8 +41,9 @@ ft_nm.c\
 ft_otool.c\
 hexdump.c\
 mach_o_parse.c\
-sym_dump.c\
-sym_format.c\
+symbol_filter.c\
+symbol_format.c\
+symbol_free.c\
 symbol_init.c\
 symbol_sort.c
 
@@ -54,7 +55,9 @@ INDEX		=	0
 OBJS		:=	$(filter-out $(FT_NM_OBJ), $(OBJS))
 OBJS		:=	$(filter-out $(FT_OTOOL_OBJ), $(OBJS))
 
-all: $(NAME)
+all:
+	@make -C $(LIBFT_DIR)
+	@make -j $(NAME)
 
 ft_nm: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_NM_OBJ)
 	@echo $(FT_NM_OBJ)

@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/01 17:51:49 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/26 19:10:48 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int		main(int ac, char **av)
 
 	if (ac != 2)
 	{
-		ft_dprintf(2, "Please give me an arg\n");
+		ft_dprintf(2, "USAGE PLACEHOLDER\n");
 		return (1);
 	}
 	if ((fd = open(av[1], O_RDONLY)) < 0)

@@ -6,29 +6,11 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/25 19:39:15 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/25 22:44:38 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/26 15:22:52 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
-
-void	dump_symtab(t_machodata *data, struct symtab_command *symtab)
-{
-	int						i;
-	char					*stringtable;
-	t_symbol				symbol;
-	struct nlist_64			*array;
-
-	ft_printf("{blu}{inv}struct symtab_command{eoc}\n");
-	stringtable = data->file + symtab->stroff;
-	array = (struct nlist_64*)(data->file + symtab->symoff);
-	i = -1;
-	while (++i < (int)symtab->nsyms)
-	{
-		symbol_init(&symbol, stringtable, array, i);
-		dump_symbol(data, &symbol);
-	}
-}
 
 void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab)
 {
