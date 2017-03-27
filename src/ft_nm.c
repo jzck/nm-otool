@@ -6,11 +6,12 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/26 19:12:03 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/27 20:59:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
+#define NM_USAGE	"usage: nm [-a]"
 
 t_machodata	*g_data = NULL;
 
@@ -20,7 +21,7 @@ t_cliopts	g_nm_opts[] =
 	{'p', NULL, NM_NOSORT, 0, NULL, 0},
 	{'r', NULL, NM_RSORT, 0, NULL, 0},
 
-	{0xff, "full", NM_FULL | NM_ALL, 0, NULL, 0},
+	{0xff, "full", NM_FULL, 0, NULL, 0},
 	{'g', NULL, 0, 0, NULL, 0},
 	{'u', NULL, 0, 0, NULL, 0},
 	{'a', NULL, NM_ALL, 0, NULL, 0},
@@ -78,7 +79,7 @@ int		main(int ac, char **av)
 	if (cliopts_get(av, g_nm_opts, &data))
 	{
 		ft_perror();
-		ft_dprintf(2, "USAGE PLACEHOLDER\n");
+		ft_dprintf(2, NM_USAGE);
 		return (1);
 	}
 	i = data.av_data - av;

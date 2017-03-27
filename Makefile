@@ -6,7 +6,7 @@
 #    By: jhalford <jack@crans.org>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/19 03:29:38 by jhalford          #+#    #+#              #
-#    Updated: 2017/03/26 15:37:30 by jhalford         ###   ########.fr        #
+#    Updated: 2017/03/27 20:21:47 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -104,14 +104,14 @@ clean:
 cleanlib:
 	@make -C $(LIBFT_DIR) clean
 
-fclean: clean
+fclean:			clean
 	@$(RM) $(NAME)
 	@printf "\r\e[38;5;196m❌ fclean $(NAME).\e[0m\e[K\n"
 
 fcleanlib:		cleanlib
 	@make -C $(LIBFT_DIR) fclean
 
-re: fclean all
+re:				fclean relib all
 
 relib:			fcleanlib $(LIBFT_LIB)
 

@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/25 21:22:06 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/26 16:50:13 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/27 20:36:57 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,15 @@ int		symbol_set(t_symbol *symbol, t_machodata *data)
 		symbol->type = SYM_COMMON;
 	else if (type_mask == N_UNDF)
 		symbol->type = SYM_UNDF;
-	else if (type_mask == N_SECT && ft_strcmp("__TEXT", symbol->section->segname) == 0)
-		symbol->type = SYM_TEXT;
-	else if (type_mask == N_SECT && ft_strcmp("__DATA", symbol->section->segname) == 0)
-		symbol->type = SYM_DATA;
 	else if (type_mask == N_ABS)
 		symbol->type = SYM_ABS;
+	else if (type_mask == N_SECT && ft_strcmp("__text", symbol->section->sectname) == 0)
+		symbol->type = SYM_TEXT;
+	else if (type_mask == N_SECT && ft_strcmp("__data", symbol->section->sectname) == 0)
+		symbol->type = SYM_DATA;
 	else if (type_mask == N_INDR)
 		symbol->type = SYM_INDR;
 	else
-		symbol->type = SYM_UNDF;
+		symbol->type = SYM_OTHER;
 	return (0);
 }

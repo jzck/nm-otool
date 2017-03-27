@@ -4,7 +4,7 @@ t_symbolmap	g_symbolmap[] =
 {
 	{'U', sym_format_undf},
 	{'A', NULL},
-	{'T', sym_format_text},
+	{'T', NULL},
 	{'D', NULL},
 	{'B', NULL},
 	{'C', NULL},
@@ -17,15 +17,6 @@ t_symbolmap	g_symbolmap[] =
 int		sym_format_undf(t_symbolmap map, t_symbol *symbol)
 {
 	ft_printf("%16s %c %s\n", " ", map.c, symbol->string);
-	return (0);
-}
-
-int		sym_format_text(t_symbolmap map, t_symbol *symbol)
-{
-	char	c;
-
-	c = symbol->nlist->n_type & N_EXT ? 'T' : 't';
-	ft_printf("%016llx %c %s\n", symbol->nlist->n_value, map.c, symbol->string);
 	return (0);
 }
 
@@ -47,7 +38,8 @@ int		symbol_format_full(t_symbol *symbol)
 			symbol->pos,
 			(symbol->nlist->n_type & N_STAB) >> 5,
 			(symbol->nlist->n_type & N_PEXT) >> 4,
-			symbol->nlist->n_type & N_TYPE, symbol->nlist->n_type & N_EXT,
+			symbol->nlist->n_type & N_TYPE,
+			symbol->nlist->n_type & N_EXT,
 			symbol->nlist->n_sect, symbol->section->sectname,
 			symbol->nlist->n_desc, symbol->nlist->n_value,
 			symbol->string);
@@ -57,6 +49,7 @@ int		symbol_format_full(t_symbol *symbol)
 int		symbol_format(t_symbol *symbol)
 {
 	t_symbolmap		map;
+	char			c;
 
 	map = g_symbolmap[symbol->type];
 
@@ -64,8 +57,9 @@ int		symbol_format(t_symbol *symbol)
 		map.format(map, symbol);
 	else
 	{
+		c = symbol->nlist->n_type &  N_EXT ? map.c : map.c + 32;
 		ft_printf("%016llx %c %s\n",
-				symbol->nlist->n_value, map.c, symbol->string);
+				symbol->nlist->n_value, c, symbol->string);
 	}
 	return (0);
 }

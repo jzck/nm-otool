@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/26 19:10:48 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/27 20:41:01 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	otool(void *file)
 	struct section_64			*sect;
 
 	if (is_fat)
-		ft_printf("fat binary: not supported yet.\n");
+		ft_printf("fat binary not supported yet\n");
 	else if (is_64)
 	{
 		sect = get_text_section(file);

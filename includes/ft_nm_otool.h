@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/26 19:12:12 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/27 20:59:15 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,12 +108,11 @@ void	symbol_free(void *data, size_t size);
 int		symbol_format(t_symbol *symbol);
 int		symbol_format_full(t_symbol *symbol);
 int		sym_format_undf(t_symbolmap map, t_symbol *symbol);
-int		sym_format_text(t_symbolmap map, t_symbol *symbol);
 int		sym_format_stab(t_symbolmap map, t_symbol *symbol);
 
 void	mach_64_parse(t_machodata *data);
 void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);
 
-void		*hexdump(void *addr, unsigned int offset, unsigned int size);
+void	*hexdump(void *addr, unsigned int offset, unsigned int size);
 
 #endif
