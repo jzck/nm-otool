@@ -46,6 +46,8 @@ int		symbol_set(t_symbol *symbol, t_machodata *data)
 		symbol->type = SYM_TEXT;
 	else if (type_mask == N_SECT && ft_strcmp("__data", symbol->section->sectname) == 0)
 		symbol->type = SYM_DATA;
+	else if (type_mask == N_SECT && ft_strcmp("__bss", symbol->section->sectname) == 0)
+		symbol->type = SYM_BSS;
 	else if (type_mask == N_INDR)
 		symbol->type = SYM_INDR;
 	else
