@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/27 20:59:15 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/28 20:35:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,16 @@
 ** filtering flags
 */
 # define NM_ALL			(1 << 4)
+# define NM_NO_LOCAL	(1 << 5)
+# define NM_NO_UNDF		(1 << 6)
+# define NM_ONLY_UNDF	(1 << 7)
 
 /*
 ** formating flags
 */
-# define NM_FULL		(1 << 5)
+# define NM_FULL		(1 << 8)
+# define NM_OFORMAT		(1 << 9)
+# define NM_MFORMAT		(1 << 10)
 
 typedef t_data_template		t_nmdata;
 typedef enum e_symtype		t_symtype;
@@ -105,10 +110,10 @@ int		symbol_sort(t_list **syms, t_flag flag);
 int		symbol_filter(t_list **syms, t_flag flag);
 void	symbol_free(void *data, size_t size);
 
-int		symbol_format(t_symbol *symbol);
+int		symbol_format(t_symbol *symbol, t_nmdata *data);
+int		sym_format_undf(t_symbol *symbol, t_nmdata *data);
+int		sym_format_stab(t_symbol *symbol, t_nmdata *data);
 int		symbol_format_full(t_symbol *symbol);
-int		sym_format_undf(t_symbolmap map, t_symbol *symbol);
-int		sym_format_stab(t_symbolmap map, t_symbol *symbol);
 
 void	mach_64_parse(t_machodata *data);
 void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);

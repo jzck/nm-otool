@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/27 20:59:06 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/28 20:48:32 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,14 @@ t_cliopts	g_nm_opts[] =
 	{'r', NULL, NM_RSORT, 0, NULL, 0},
 
 	{0xff, "full", NM_FULL, 0, NULL, 0},
-	{'g', NULL, 0, 0, NULL, 0},
-	{'u', NULL, 0, 0, NULL, 0},
 	{'a', NULL, NM_ALL, 0, NULL, 0},
-	{'U', NULL, 0, 0, NULL, 0},
-	{'o', NULL, 0, 0, NULL, 0},
+	{'g', NULL, NM_NO_LOCAL, 0, NULL, 0},
+	{'u', NULL, NM_ONLY_UNDF, 0, NULL, 0},
+	{'U', NULL, NM_NO_UNDF, 0, NULL, 0},
+
+	{'o', NULL, NM_OFORMAT, 0, NULL, 0},
 	{'A', NULL, 0, 0, NULL, 0},
-	{'m', NULL, 0, 0, NULL, 0},
+	{'m', NULL, NM_MFORMAT, 0, NULL, 0},
 	{'x', NULL, 0, 0, NULL, 0},
 	{'j', NULL, 0, 0, NULL, 0},
 };
@@ -44,11 +45,13 @@ void	mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
 	mach_64_parse(&mach);
 	symbol_sort(&mach.symbols, data->flag);
 	symbol_filter(&mach.symbols, data->flag);
-	if (data->flag & NM_FULL)
+	if (data->flag & NM_MFORMAT)
+		format = symbol_format_m;
+	else if (data->flag & NM_FULL)
 		format = symbol_format_full;
 	else
 		format = symbol_format;
-	ft_lstiter(mach.symbols, format);
+	ft_lstiter(mach.symbols, format, data);
 }
 
 int		nm(void *file, t_nmdata *data)
@@ -85,6 +88,8 @@ int		main(int ac, char **av)
 	i = data.av_data - av;
 	while (i < ac && av[i])
 	{
+		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
+			ft_printf("%c%s:\n", i - (data.av_data - av) ? '\n' : 0, av[i]);
 		if ((fd = open(av[i], O_RDONLY)) < 0)
 			return (1);
 		if ((fstat(fd, &buf)) < 0)
