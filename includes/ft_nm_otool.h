@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/28 20:35:06 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/31 21:01:14 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,19 @@
 # define NM_OFORMAT		(1 << 9)
 # define NM_MFORMAT		(1 << 10)
 
-typedef t_data_template		t_nmdata;
+typedef struct s_nmdata		t_nmdata;
 typedef enum e_symtype		t_symtype;
 typedef struct s_symbol		t_symbol;
 typedef struct s_symbolmap	t_symbolmap;
 typedef struct s_machodata	t_machodata;
 typedef struct s_symbol		t_symbol;
+
+struct s_nmdata
+{
+	t_flag	flag;
+	char	**av_data;
+	char	*filename;
+};
 
 enum e_symtype
 {
@@ -71,7 +78,6 @@ enum e_symtype
 	SYM_OTHER,
 	SYM_INDR,
 };
-
 
 struct s_machodata
 {
@@ -94,7 +100,7 @@ struct s_symbol
 struct s_symbolmap
 {
 	char	c;
-	int		(*format)();
+	char	*s;
 };
 
 extern t_symbolmap	g_symbolmap[];
@@ -111,9 +117,9 @@ int		symbol_filter(t_list **syms, t_flag flag);
 void	symbol_free(void *data, size_t size);
 
 int		symbol_format(t_symbol *symbol, t_nmdata *data);
-int		sym_format_undf(t_symbol *symbol, t_nmdata *data);
-int		sym_format_stab(t_symbol *symbol, t_nmdata *data);
-int		symbol_format_full(t_symbol *symbol);
+void	symbol_format_dfl(t_symbol *symbol);
+void	symbol_format_m(t_symbol *symbol);
+void	symbol_format_full(t_symbol *symbol);
 
 void	mach_64_parse(t_machodata *data);
 void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);

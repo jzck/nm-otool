@@ -3,36 +3,35 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jhalford <jack@crans.org>                  +#+  +:+       +#+         #
+#    By: wescande <wescande@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2017/02/19 03:29:38 by jhalford          #+#    #+#              #
-#    Updated: 2017/03/27 20:21:47 by jhalford         ###   ########.fr        #
+#    Created: 2016/08/29 21:32:58 by wescande          #+#    #+#              #
+#    Updated: 2017/03/31 21:05:56 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	ft_nm ft_otool
 
 CC			=	gcc
-MKDIR		=	mkdir -p
-RM			=	/bin/rm -rf
-
 W_FLAGS		=	-Wall -Wextra -Werror
 D_FLAGS		=
-V_FLAGS		=	-fvisibility=hidden
-FLAGS		=	$(W_FLAGS) $(D_FLAGS) $(V_FLAGS)
+FLAGS		=	$(W_FLAGS) $(D_FLAGS)
 
-DELTA		=	$$(echo "$$(tput cols)-47"|bc)
+LEN_NAME	=	`printf "%s" $(NAME) |wc -c`
+DELTA		=	$$(echo "$$(tput cols)-31-$(LEN_NAME)"|bc)
 
 LIBFT_DIR	=	libft/
 LIBFT_LIB	=	$(LIBFT_DIR)libft.a
 LIBFT_INC	=	$(LIBFT_DIR)includes/
 
-SRC_DIR		=	src/
+LIBS		=
+
+SRC_DIR		=	srcs/
 INC_DIR		=	includes/
 OBJ_DIR		=	objs/
 
-FT_NM_OBJ	=	$(OBJ_DIR)ft_nm.o
-FT_OTOOL_OBJ=	$(OBJ_DIR)ft_otool.o
+NM_OBJ		=	$(OBJ_DIR)ft_nm.o
+OTOOL_OBJ	=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
 dump_symtab.c\
@@ -49,76 +48,71 @@ symbol_sort.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))
-NB			=	$(words $(SRC_BASE) $(NAME))
+OBJS		:=	$(filter-out $(NM_OBJ), $(OBJS))
+OBJS		:=	$(filter-out $(OTOOL_OBJ), $(OBJS))
+NB			=	$(words $(SRC_BASE))
 INDEX		=	0
 
-OBJS		:=	$(filter-out $(FT_NM_OBJ), $(OBJS))
-OBJS		:=	$(filter-out $(FT_OTOOL_OBJ), $(OBJS))
-
-all:
+all :
 	@make -C $(LIBFT_DIR)
 	@make -j $(NAME)
 
-ft_nm: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_NM_OBJ)
-	@echo $(FT_NM_OBJ)
-	@$(CC) $(FLAGS) $(D_FLAGS) \
+ft_nm:		$(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(NM_OBJ)
+	@$(CC) $(OBJS) -o $@ \
 		-I $(INC_DIR) \
 		-I $(LIBFT_INC) \
-		$(LIBS) \
-		$(LIBFT_LIB) $(OBJS) $(FT_NM_OBJ) \
-		-o $@
-	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
-	@strip -x $@
-	@printf "\r\e[48;5;15;38;5;25m✅ MAKE $@\e[0m\e[K\n"
+		$(LIBS) $(LIBFT_LIB) $(NM_OBJ) $(FLAGS)
+	@printf "\r\033[38;5;117m✓ MAKE $@ \033[0m\033[K\n"
 
-ft_otool: $(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(FT_OTOOL_OBJ)
-	@$(CC) $(FLAGS) $(D_FLAGS) \
+ft_otool:	$(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(OTOOL_OBJ)
+	@$(CC) $(OBJS) -o $@ \
 		-I $(INC_DIR) \
 		-I $(LIBFT_INC) \
-		$(LIBS) \
-		$(LIBFT_LIB) $(OBJS) $(FT_OTOOL_OBJ) \
-		-o $@
-	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
-	@strip -x $@
-	@printf "\r\e[48;5;15;38;5;25m✅ MAKE $@\e[0m\e[K\n"
-
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
-	@$(eval DONE=$(shell echo $$(($(INDEX)*20/$(NB)))))
-	@$(eval PERCENT=$(shell echo $$(($(INDEX)*100/$(NB)))))
-	@$(eval COLOR=$(shell echo $$(($(PERCENT)%35+196))))
-	@$(eval TO_DO=$(shell echo $$((20-$(INDEX)*20/$(NB)))))
-	@printf "\r\e[38;5;11m⌛ MAKE %10.10s : %2d%% \e[48;5;%dm%*s\e[0m%*s\e[48;5;255m \e[0m \e[38;5;11m %*s\e[0m\e[K" $@ $(PERCENT) $(COLOR) $(DONE) "" $(TO_DO) "" $(DELTA) "$@"
-	@$(CC) $(FLAGS) -MMD -c $< -o $@\
-		-I $(INC_DIR) \
-		-I $(LIBFT_INC)
-	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
-
-$(OBJ_DIR):
-	@$(MKDIR) $(OBJ_DIR)
-	@$(MKDIR) $(dir $(OBJS))
-
-clean:
-	@$(RM) $(OBJ_DIR)
-	@printf "\r\e[38;5;202m✖ clean $(NAME).\e[0m\e[K\n"
-
-cleanlib:
-	@make -C $(LIBFT_DIR) clean
-
-fclean:			clean
-	@$(RM) $(NAME)
-	@printf "\r\e[38;5;196m❌ fclean $(NAME).\e[0m\e[K\n"
-
-fcleanlib:		cleanlib
-	@make -C $(LIBFT_DIR) fclean
-
-re:				fclean relib all
-
-relib:			fcleanlib $(LIBFT_LIB)
+		$(LIBS) $(LIBFT_LIB) $(OTOOL_OBJ) $(FLAGS)
+	@printf "\r\033[38;5;117m✓ MAKE $@ \033[0m\033[K\n"
 
 $(LIBFT_LIB):
 	@make -C $(LIBFT_DIR)
 
-.PHONY: fclean clean re relib cleanlib fcleanlib
+$(OBJ_DIR) :
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(dir $(OBJS))
+
+$(OBJ_DIR)%.o :	$(SRC_DIR)%.c | $(OBJ_DIR)
+	@$(eval DONE=$(shell echo $$(($(INDEX)*20/$(NB)))))
+	@$(eval PERCENT=$(shell echo $$(($(INDEX)*100/$(NB)))))
+	@$(eval TO_DO=$(shell echo $$((20-$(INDEX)*20/$(NB) - 1))))
+	@$(eval COLOR=$(shell list=(160 196 202 208 215 221 226 227 190 154 118 82 46); index=$$(($(PERCENT) * $${#list[@]} / 100)); echo "$${list[$$index]}"))
+	@printf "\r\033[38;5;%dm⌛ [%s]: %2d%% `printf '█%.0s' {0..$(DONE)}`%*s❙%*.*s\033[0m\033[K" $(COLOR) nm/otool $(PERCENT) $(TO_DO) "" $(DELTA) $(DELTA) "$(shell echo "$@" | sed 's/^.*\///')"
+	@$(CC) $(FLAGS) $(OBJ_FLAG) -MMD -c $< -o $@\
+		-I $(INC_DIR)\
+		-I $(LIBFT_INC)
+	@$(eval INDEX=$(shell echo $$(($(INDEX)+1))))
+
+clean:			cleanlib
+	@if [ -e $(OBJ_DIR) ]; then \
+		rm -rf $(OBJ_DIR); \
+		printf "\r\033[38;5;202m✗ clean $(NAME) \033[0m\033[K\n"; \
+	fi;
+
+cleanlib:
+	@make -C $(LIBFT_DIR) clean
+
+fclean:			clean fcleanlib
+	@for file in $(NAME); do \
+		if [ -e $$file ]; then \
+			rm -f $$file ; \
+			printf "\r\033[38;5;196m✗ fclean $$file\033[0m\033[K\n"; \
+		fi; \
+	done;
+
+fcleanlib:		cleanlib
+	@make -C $(LIBFT_DIR) fclean
+
+re:				fclean all
+
+relib:			fcleanlib $(LIBFT_LIB)
+
+.PHONY :		fclean clean re relib cleanlib fcleanlib
 
 -include $(OBJS:.o=.d)
-

@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/28 20:48:32 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/03/31 21:50:12 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ t_cliopts	g_nm_opts[] =
 void	mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
 {
 	t_machodata		mach;
-	int				(*format)();
 
 	mach.sects = NULL;
 	mach.symbols = NULL;
@@ -45,13 +44,7 @@ void	mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
 	mach_64_parse(&mach);
 	symbol_sort(&mach.symbols, data->flag);
 	symbol_filter(&mach.symbols, data->flag);
-	if (data->flag & NM_MFORMAT)
-		format = symbol_format_m;
-	else if (data->flag & NM_FULL)
-		format = symbol_format_full;
-	else
-		format = symbol_format;
-	ft_lstiter(mach.symbols, format, data);
+	ft_lstiter(mach.symbols, symbol_format, data);
 }
 
 int		nm(void *file, t_nmdata *data)
@@ -77,12 +70,11 @@ int		main(int ac, char **av)
 	int				i;
 	struct stat		buf;
 
-	g_argv = av;
 	data.flag = NM_ASORT;
 	if (cliopts_get(av, g_nm_opts, &data))
 	{
-		ft_perror();
-		ft_dprintf(2, NM_USAGE);
+		ft_perror("ft_nm");
+		ft_dprintf(2, NM_USAGE"\n");
 		return (1);
 	}
 	i = data.av_data - av;
@@ -90,7 +82,7 @@ int		main(int ac, char **av)
 	{
 		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
 			ft_printf("%c%s:\n", i - (data.av_data - av) ? '\n' : 0, av[i]);
-		if ((fd = open(av[i], O_RDONLY)) < 0)
+		if ((fd = open((data.filename = av[i]), O_RDONLY)) < 0)
 			return (1);
 		if ((fstat(fd, &buf)) < 0)
 			return (1);
