@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/27 20:41:01 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 18:35:37 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,21 @@
 void	*get_text_section(void *file)
 {
 	uint32_t					i;
+	uint32_t					j;
 	struct load_command			*lc;
-	struct mach_header_64		*header = file;
 	struct segment_command_64	*seg;
 	struct section_64			*sect;
 
-	lc = (void*)(header + 1);
-	for (i = 0; i < header->ncmds; i++)
+	lc = (void*)((struct mach_header_64*)file + 1);
+	i = -1;
+	while (++i < ((struct mach_header_64*)file)->ncmds)
 	{
 		if (lc->cmd & LC_SEGMENT_64)
 		{
 			seg = (struct segment_command_64*)lc;
 			sect = (void*)(seg + 1);
-			for (i = 0; i < seg->nsects; i++)
+			j = -1;
+			while (++j < seg->nsects)
 			{
 				if (ft_strcmp(sect->sectname, "__text") == 0)
 					return (sect);
@@ -41,14 +43,13 @@ void	*get_text_section(void *file)
 
 void	otool(void *file)
 {
-	uint32_t	magic = *(int *)file;
-	int			is_fat = IS_FAT(magic);
-	int			is_64 = IS_MAGIC_64(magic);
-	struct section_64			*sect;
+	uint32_t			magic;
+	struct section_64	*sect;
 
-	if (is_fat)
+	magic = *(int *)file;
+	if (IS_FAT(magic))
 		ft_printf("fat binary not supported yet\n");
-	else if (is_64)
+	else if (IS_MAGIC_64(magic))
 	{
 		sect = get_text_section(file);
 		ft_printf("Contents of (__TEXT,__text) section\n");

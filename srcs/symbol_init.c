@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/25 21:22:06 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/27 20:36:57 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 18:35:41 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_machodata	*g_data;
 
-int	symbol_init(t_symbol *symbol, char *stringtable, struct nlist_64 *array, int i)
+int		symbol_init(t_symbol *symbol, char *stringtable, struct nlist_64 *array, int i)
 {
 	symbol->type = 0;
 	symbol->pos = i;

@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/23 15:56:37 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/26 19:05:53 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 18:31:01 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,15 @@ static void	seg_64_parse(t_machodata *data, struct segment_command_64 *seg)
 
 	nsects = seg->nsects;
 	sect = (void*)(seg + 1);
-	for (i = 0; i < nsects; i++)
+	i = -1;
+	while (++i < nsects)
 	{
 		ft_lsteadd(&data->sects, ft_lstnew(&sect, sizeof(sect)));
 		sect = sect + 1;
 	}
 }
 
-void	mach_64_parse(t_machodata *data)
+void		mach_64_parse(t_machodata *data)
 {
 	uint32_t				ncmds;
 	uint32_t				i;
@@ -56,7 +57,8 @@ void	mach_64_parse(t_machodata *data)
 	header = data->file;
 	ncmds = header->ncmds;
 	lc = (void*)(header + 1);
-	for (i = 0; i < ncmds; i++)
+	i = -1;
+	while (++i < ncmds)
 	{
 		if (lc->cmd == LC_SYMTAB)
 			symtab_parse(data, (struct symtab_command*)lc);
@@ -67,23 +69,3 @@ void	mach_64_parse(t_machodata *data)
 		lc = (void*)lc + lc->cmdsize;
 	}
 }
-
-/* static void	fetch_fatheader(t_machodata *data) */
-/* { */
-/* 	int					i; */
-/* 	int					nfat_arch; */
-/* 	struct fat_arch		*arch; */
-/* 	struct fat_header	*header; */
-
-/* 	header = data->file; */
-/* 	nfat_arch = header->nfat_arch; */
-/* 	arch = (void*)(header + 1); */
-/* 	ft_printf("{yel}{inv}FAT header w/ [%i] architures{eoc}\n", nfat_arch); */
-/* 	for (i = 0; i < nfat_arch; i++) */
-/* 	{ */
-/* 		ft_printf("CPU type=[%i]", arch->cputype); */
-/* 		fetch_machheader64(data->file + arch->offset, data); */
-/* 		arch += 1; */
-/* 	} */
-/* } */
-

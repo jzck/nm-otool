@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/25 19:39:15 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/26 15:22:52 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 18:26:32 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,3 @@ void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab)
 	ft_printf("nlocrel       %i\n", dysymtab->nlocrel);
 	ft_putendl("");
 }
-

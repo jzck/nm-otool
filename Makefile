@@ -38,7 +38,6 @@ dump_symtab.c\
 fetch_header.c\
 ft_nm.c\
 ft_otool.c\
-hexdump.c\
 mach_o_parse.c\
 symbol_filter.c\
 symbol_format.c\
