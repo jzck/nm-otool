@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/28 20:34:32 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/31 21:49:55 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 17:43:32 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ void	symbol_format_dfl(t_symbol *symbol)
 
 int		symbol_format(t_symbol *symbol, t_nmdata *data)
 {
-
 	if (data->flag & NM_OFORMAT)
 		ft_printf("%s: ", data->filename);
 	if (!(data->flag & NM_ONLY_UNDF))

@@ -6,12 +6,12 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/31 21:50:12 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 17:44:54 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
-#define NM_USAGE	"usage: nm [-a]"
+#define NM_USAGE	"usage: nm [-agmnpruU]"
 
 t_machodata	*g_data = NULL;
 
@@ -28,8 +28,9 @@ t_cliopts	g_nm_opts[] =
 	{'U', NULL, NM_NO_UNDF, 0, NULL, 0},
 
 	{'o', NULL, NM_OFORMAT, 0, NULL, 0},
-	{'A', NULL, 0, 0, NULL, 0},
 	{'m', NULL, NM_MFORMAT, 0, NULL, 0},
+
+	{'A', NULL, 0, 0, NULL, 0},
 	{'x', NULL, 0, 0, NULL, 0},
 	{'j', NULL, 0, 0, NULL, 0},
 };

@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/31 21:01:14 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/07 17:43:29 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,24 +30,37 @@
 # define IS_FAT(x)		(x == FAT_MAGIC || x == FAT_CIGAM)
 
 /*
-** sorting flags
-*/
+ * sorting flags
+ * 		-r reverse sort
+ * 		-n numerical sort (as opposed to alphabetical)
+ *		-p don't sort
+ */
 # define NM_NOSORT		(1 << 0)
 # define NM_NSORT		(1 << 1)
 # define NM_ASORT		(1 << 2)
 # define NM_RSORT		(1 << 3)
 
 /*
-** filtering flags
-*/
+ * filtering flags
+ * 		-a show all symbols
+ * 		-g filter-out local symbols
+ * 		-u show only undefined symbols
+ * 		-U filter-out undefined symbols
+ */
 # define NM_ALL			(1 << 4)
 # define NM_NO_LOCAL	(1 << 5)
 # define NM_NO_UNDF		(1 << 6)
 # define NM_ONLY_UNDF	(1 << 7)
 
 /*
-** formating flags
-*/
+ * formating flags
+ * 		-o prepend file name on each line
+ * 		-m Display  the  N_SECT  type symbols (Mach-O symbols) as (segment_name,
+ * 		   section_name) followed by either external or  non-external  and  then
+ * 		   the  symbol  name.   Undefined, common, absolute and indirect symbols
+ * 		   get displayed as (undefined), (common), (absolute),  and  (indirect),
+ * 		   respectively. 
+ */
 # define NM_FULL		(1 << 8)
 # define NM_OFORMAT		(1 << 9)
 # define NM_MFORMAT		(1 << 10)
