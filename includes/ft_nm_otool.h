@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/08 11:26:29 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/08 16:37:58 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,26 +15,25 @@
 
 # include "libft.h"
 # include <stdio.h>
+# include <stdlib.h>
+# include <fcntl.h>
 # include <sys/mman.h>
+# include <sys/stat.h>
 
+# include <mach/machine.h>
 # include <mach-o/loader.h>
 # include <mach-o/nlist.h>
 # include <mach-o/fat.h>
-# include <mach/machine.h>
-
-# include <fcntl.h>
-# include <sys/stat.h>
-# include <stdlib.h>
 
 # define IS_MAGIC_64(x)	(x == MH_MAGIC_64 || x == MH_CIGAM_64)
 # define IS_FAT(x)		(x == FAT_MAGIC || x == FAT_CIGAM)
 
 /*
- * sorting flags
- * 		-r reverse sort
- * 		-n numerical sort (as opposed to alphabetical)
- *		-p don't sort
- */
+** sorting flags
+** 		-r reverse sort
+** 		-n numerical sort (as opposed to alphabetical)
+**		-p don't sort
+*/
 
 # define NM_NOSORT		(1 << 0)
 # define NM_NSORT		(1 << 1)
@@ -42,12 +41,12 @@
 # define NM_RSORT		(1 << 3)
 
 /*
- * filtering flags
- * 		-a show all symbols
- * 		-g filter-out local symbols
- * 		-u show only undefined symbols
- * 		-U filter-out undefined symbols
- */
+** filtering flags
+** 		-a show all symbols
+** 		-g filter-out local symbols
+** 		-u show only undefined symbols
+** 		-U filter-out undefined symbols
+*/
 
 # define NM_ALL			(1 << 4)
 # define NM_NO_LOCAL	(1 << 5)
@@ -55,14 +54,14 @@
 # define NM_ONLY_UNDF	(1 << 7)
 
 /*
- * formating flags
- * 		-o prepend file name on each line
- * 		-m Display  the  N_SECT  type symbols (Mach-O symbols) as (segment_name,
- * 		   section_name) followed by either external or  non-external  and  then
- * 		   the  symbol  name.   Undefined, common, absolute and indirect symbols
- * 		   get displayed as (undefined), (common), (absolute),  and  (indirect),
- * 		   respectively. 
- */
+** formating flags
+** 		-o prepend file name on each line
+** 		-m Display  the  N_SECT  type symbols (Mach-O symbols) as (segment_name,
+** 		   section_name) followed by either external or  non-external  and  then
+** 		   the  symbol  name.   Undefined, common, absolute and indirect symbols
+** 		   get displayed as (undefined), (common), (absolute),  and  (indirect),
+** 		   respectively.
+*/
 
 # define NM_FULL		(1 << 8)
 # define NM_OFORMAT		(1 << 9)
@@ -70,19 +69,18 @@
 
 typedef struct s_nmdata		t_nmdata;
 typedef enum e_symtype		t_symtype;
-typedef struct s_symbol		t_symbol;
 typedef struct s_symbolmap	t_symbolmap;
 typedef struct s_machodata	t_machodata;
 typedef struct s_symbol		t_symbol;
 
-struct s_nmdata
+struct						s_nmdata
 {
-	t_flag	flag;
-	char	**av_data;
-	char	*filename;
+	t_flag					flag;
+	char					**av_data;
+	char					*filename;
 };
 
-enum e_symtype
+enum						e_symtype
 {
 	SYM_UNDF,
 	SYM_ABS,
@@ -95,7 +93,7 @@ enum e_symtype
 	SYM_INDR,
 };
 
-struct s_machodata
+struct						s_machodata
 {
 	void					*file;
 	t_list					*sects;
@@ -104,40 +102,41 @@ struct s_machodata
 	struct dysymtab_command	*dysymtab;
 };
 
-struct s_symbol
+struct						s_symbol
 {
-	int					pos;
-	t_symtype			type;
-	char				*string;
-	struct nlist_64		*nlist;
-	struct section_64	*section;
+	int						pos;
+	t_symtype				type;
+	char					*string;
+	struct nlist_64			*nlist;
+	struct section_64		*section;
 };
 
-struct s_symbolmap
+struct						s_symbolmap
 {
-	char	c;
-	char	*s;
+	char					c;
+	char					*s;
 };
 
 extern t_symbolmap	g_symbolmap[];
 extern t_machodata	*g_data;
 
-int		mach_o_parse(t_machodata *data);
-int		fetch_header(t_machodata *data);
+int							mach_o_parse(t_machodata *data);
+int							fetch_header(t_machodata *data);
 
-int		symbol_init(t_symbol *symbol,
+int							symbol_init(t_symbol *symbol,
 				char *stringtable, struct nlist_64 *array, int i);
-int		symbol_set(t_symbol *symbol, t_machodata *data);
-int		symbol_sort(t_list **syms, t_flag flag);
-int		symbol_filter(t_list **syms, t_flag flag);
-void	symbol_free(void *data, size_t size);
+int							symbol_set(t_symbol *symbol, t_machodata *data);
+int							symbol_sort(t_list **syms, t_flag flag);
+int							symbol_filter(t_list **syms, t_flag flag);
+void						symbol_free(void *data, size_t size);
 
-int		symbol_format(t_symbol *symbol, t_nmdata *data);
-void	symbol_format_dfl(t_symbol *symbol);
-void	symbol_format_m(t_symbol *symbol);
-void	symbol_format_full(t_symbol *symbol);
+int							symbol_format(t_symbol *symbol, t_nmdata *data);
+void						symbol_format_dfl(t_symbol *symbol);
+void						symbol_format_m(t_symbol *symbol);
+void						symbol_format_full(t_symbol *symbol);
 
-void	mach_64_parse(t_machodata *data);
-void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);
+void						mach_64_parse(t_machodata *data);
+void						dump_dysymtab(t_machodata *data,
+		struct dysymtab_command *dysymtab);
 
 #endif
