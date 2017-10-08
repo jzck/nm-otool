@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/28 20:34:32 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/07 17:43:32 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/08 11:34:43 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,14 @@ void	symbol_format_desc(t_symbol *symbol)
 {
 	if (symbol->nlist->n_desc & REFERENCED_DYNAMICALLY)
 		ft_printf(" [referenced dynamically]");
-	ft_printf(" %sexternal", symbol->nlist->n_type & N_EXT ? "" : "non-");
-	ft_printf("%s",
-			!(symbol->nlist->n_type & N_EXT)
-			&& symbol->nlist->n_type & N_PEXT ? " (was a private externel)" : "");
+	if (symbol->nlist->n_type & N_EXT)
+		ft_printf(" external");
+	else
+	{
+		ft_printf(" non-external");
+		if (symbol->nlist->n_type & N_PEXT)
+			ft_printf(" (was a private external)");
+	}
 }
 
 void	symbol_format_m(t_symbol *symbol)
@@ -49,7 +53,7 @@ void	symbol_format_m(t_symbol *symbol)
 
 void	symbol_format_full(t_symbol *symbol)
 {
-	ft_printf("\t%03b|%b|%x|%b \t%i(%s) \t%04x",
+	ft_printf("\t%i %03b|%b|%x|%b \t%i(%s) \t%04x",
 			symbol->pos,
 			(symbol->nlist->n_type & N_STAB) >> 5,
 			(symbol->nlist->n_type & N_PEXT) >> 4,

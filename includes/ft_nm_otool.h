@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/07 17:43:29 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/08 11:26:29 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
  * 		-n numerical sort (as opposed to alphabetical)
  *		-p don't sort
  */
+
 # define NM_NOSORT		(1 << 0)
 # define NM_NSORT		(1 << 1)
 # define NM_ASORT		(1 << 2)
@@ -47,6 +48,7 @@
  * 		-u show only undefined symbols
  * 		-U filter-out undefined symbols
  */
+
 # define NM_ALL			(1 << 4)
 # define NM_NO_LOCAL	(1 << 5)
 # define NM_NO_UNDF		(1 << 6)
@@ -61,6 +63,7 @@
  * 		   get displayed as (undefined), (common), (absolute),  and  (indirect),
  * 		   respectively. 
  */
+
 # define NM_FULL		(1 << 8)
 # define NM_OFORMAT		(1 << 9)
 # define NM_MFORMAT		(1 << 10)
@@ -136,7 +139,5 @@ void	symbol_format_full(t_symbol *symbol);
 
 void	mach_64_parse(t_machodata *data);
 void	dump_dysymtab(t_machodata *data, struct dysymtab_command *dysymtab);
-
-void	*hexdump(void *addr, unsigned int offset, unsigned int size);
 
 #endif

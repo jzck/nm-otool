@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/25 21:22:06 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/07 18:35:41 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/08 11:02:50 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 t_machodata	*g_data;
 
-int		symbol_init(t_symbol *symbol, char *stringtable, struct nlist_64 *array, int i)
+int				symbol_init(t_symbol *symbol,
+		char *stringtable, struct nlist_64 *array, int i)
 {
 	symbol->type = 0;
 	symbol->pos = i;
@@ -23,34 +24,43 @@ int		symbol_init(t_symbol *symbol, char *stringtable, struct nlist_64 *array, in
 	return (0);
 }
 
-int		symbol_set(t_symbol *symbol, t_machodata *data)
+static int		symbol_gettype(int type_mask,
+		struct nlist_64 *nlist, struct section_64 *section)
 {
-	struct nlist_64	*nlist;
-	uint8_t			n_type;
-	uint8_t			type_mask;
-
-	nlist = symbol->nlist;
-	n_type = symbol->nlist->n_type;
-	type_mask = n_type & N_TYPE;
-	symbol->section = symbol->nlist->n_sect ?
-		(*(struct section_64**)ft_lst_at(data->sects, symbol->nlist->n_sect - 1)->content) : NULL;
-	if (n_type & N_STAB)
-		symbol->type = SYM_STAB;
-	else if (type_mask == N_UNDF && n_type & N_EXT && nlist->n_value != 0)
-		symbol->type = SYM_COMMON;
+	if (nlist->n_type & N_STAB)
+		return (SYM_STAB);
+	else if (type_mask == N_UNDF && nlist->n_type & N_EXT && nlist->n_value)
+		return (SYM_COMMON);
 	else if (type_mask == N_UNDF)
-		symbol->type = SYM_UNDF;
+		return (SYM_UNDF);
 	else if (type_mask == N_ABS)
-		symbol->type = SYM_ABS;
-	else if (type_mask == N_SECT && ft_strcmp("__text", symbol->section->sectname) == 0)
-		symbol->type = SYM_TEXT;
-	else if (type_mask == N_SECT && ft_strcmp("__data", symbol->section->sectname) == 0)
-		symbol->type = SYM_DATA;
-	else if (type_mask == N_SECT && ft_strcmp("__bss", symbol->section->sectname) == 0)
-		symbol->type = SYM_BSS;
+		return (SYM_ABS);
+	else if (type_mask == N_SECT && ft_strequ("__text", section->sectname))
+		return (SYM_TEXT);
+	else if (type_mask == N_SECT && ft_strequ("__data", section->sectname))
+		return (SYM_DATA);
+	else if (type_mask == N_SECT && ft_strequ("__bss", section->sectname))
+		return (SYM_BSS);
 	else if (type_mask == N_INDR)
-		symbol->type = SYM_INDR;
+		return (SYM_INDR);
 	else
-		symbol->type = SYM_OTHER;
+		return (SYM_OTHER);
+}
+
+int				symbol_set(t_symbol *sym, t_machodata *data)
+{
+	t_list	*lst;
+
+	if (sym->nlist->n_sect)
+	{
+		lst = ft_lst_at(data->sects, sym->nlist->n_sect - 1);
+		sym->section = *(struct section_64**)(lst->content);
+	}
+	else
+		sym->section = NULL;
+	sym->type = symbol_gettype(
+			sym->nlist->n_type & N_TYPE,
+			sym->nlist,
+			sym->section);
 	return (0);
 }

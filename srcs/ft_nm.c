@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/07 17:44:54 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/08 11:33:44 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,28 +48,51 @@ void	mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
 	ft_lstiter(mach.symbols, symbol_format, data);
 }
 
-int		nm(void *file, t_nmdata *data)
+int		nm_file(void *file, t_nmdata *data)
 {
-	uint32_t	magic = *(int *)file;
-	int			is_fat = IS_FAT(magic);
-	int			is_64 = IS_MAGIC_64(magic);
+	uint32_t	magic;
 
-	if (is_64)
+	magic = *(int*)file;
+	if (IS_MAGIC_64(magic))
 		mach_64_dump(file, data);
-	else if (is_fat)
-		ft_printf("{red}unsupported architecture:{eoc} magic = %#x (FAT)\n", magic);
+	else if (IS_FAT(magic))
+		ft_printf("{red}unsupported arch:{eoc} magic=%#x(FAT)\n", magic);
 	else
-		ft_printf("{red}unsupported architecture:{eoc} magic = %#x\n", magic);
+		ft_printf("{red}unsupported arch:{eoc} magic=%#x\n", magic);
+	return (0);
+}
+
+int		nm(int ac, char **av, t_nmdata data)
+{
+	int				i;
+	struct stat		buf;
+	int				fd;
+	char			*file;
+
+	i = data.av_data - av;
+	while (i < ac && av[i])
+	{
+		data.filename = av[i];
+		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
+			ft_printf("%c%s:\n", i - (data.av_data - av) ? '\n' : 0, av[i]);
+		if ((fd = open((data.filename), O_RDONLY)) < 0)
+			return (1);
+		if ((fstat(fd, &buf)) < 0)
+			return (1);
+		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
+				== MAP_FAILED)
+			return (1);
+		nm_file(file, &data);
+		if (munmap(file, buf.st_size))
+			return (1);
+		i++;
+	}
 	return (0);
 }
 
 int		main(int ac, char **av)
 {
-	char			*file;
 	t_nmdata		data;
-	int				fd;
-	int				i;
-	struct stat		buf;
 
 	data.flag = NM_ASORT;
 	if (cliopts_get(av, g_nm_opts, &data))
@@ -78,22 +101,5 @@ int		main(int ac, char **av)
 		ft_dprintf(2, NM_USAGE"\n");
 		return (1);
 	}
-	i = data.av_data - av;
-	while (i < ac && av[i])
-	{
-		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
-			ft_printf("%c%s:\n", i - (data.av_data - av) ? '\n' : 0, av[i]);
-		if ((fd = open((data.filename = av[i]), O_RDONLY)) < 0)
-			return (1);
-		if ((fstat(fd, &buf)) < 0)
-			return (1);
-		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
-				== MAP_FAILED)
-			return (1);
-		nm(file, &data);
-		if (munmap(file, buf.st_size))
-			return (1);
-		i++;
-	}
-	return (0);
+	return (nm(ac, av, data));
 }
