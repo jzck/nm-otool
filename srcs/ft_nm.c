@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/08 11:33:44 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/23 16:33:42 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ t_cliopts	g_nm_opts[] =
 	{'p', NULL, NM_NOSORT, 0, NULL, 0},
 	{'r', NULL, NM_RSORT, 0, NULL, 0},
 
-	{0xff, "full", NM_FULL, 0, NULL, 0},
 	{'a', NULL, NM_ALL, 0, NULL, 0},
 	{'g', NULL, NM_NO_LOCAL, 0, NULL, 0},
 	{'u', NULL, NM_ONLY_UNDF, 0, NULL, 0},
 	{'U', NULL, NM_NO_UNDF, 0, NULL, 0},
 
+	{0xff, "full", NM_FULL, 0, NULL, 0},
 	{'o', NULL, NM_OFORMAT, 0, NULL, 0},
 	{'m', NULL, NM_MFORMAT, 0, NULL, 0},
 
@@ -35,25 +35,14 @@ t_cliopts	g_nm_opts[] =
 	{'j', NULL, 0, 0, NULL, 0},
 };
 
-void	mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
-{
-	t_machodata		mach;
-
-	mach.sects = NULL;
-	mach.symbols = NULL;
-	mach.file = file;
-	mach_64_parse(&mach);
-	symbol_sort(&mach.symbols, data->flag);
-	symbol_filter(&mach.symbols, data->flag);
-	ft_lstiter(mach.symbols, symbol_format, data);
-}
-
 int		nm_file(void *file, t_nmdata *data)
 {
 	uint32_t	magic;
 
 	magic = *(int*)file;
-	if (IS_MAGIC_64(magic))
+	if (IS_MACH_64(magic))
+		mach_64_dump(file, data);
+	else if (IS_MACH_32(magic))
 		mach_64_dump(file, data);
 	else if (IS_FAT(magic))
 		ft_printf("{red}unsupported arch:{eoc} magic=%#x(FAT)\n", magic);

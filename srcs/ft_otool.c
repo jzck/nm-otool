@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/07 18:35:37 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/23 16:37:45 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	otool(void *file)
 	magic = *(int *)file;
 	if (IS_FAT(magic))
 		ft_printf("fat binary not supported yet\n");
-	else if (IS_MAGIC_64(magic))
+	else if (IS_MACH_64(magic))
 	{
 		sect = get_text_section(file);
 		ft_printf("Contents of (__TEXT,__text) section\n");

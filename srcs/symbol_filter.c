@@ -6,38 +6,40 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/28 20:34:36 by jhalford          #+#    #+#             */
-/*   Updated: 2017/03/28 20:35:11 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/23 16:45:54 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
-int		cmp_symtype(t_symbol *sym, void *type)
+int			cmp_symtype(t_symbol *sym, void *type)
 {
-	return (sym->type - *(t_type*)type);
+	return ((1 << sym->type) & *(uint64_t*)type);
 }
 
-int		cmp_no_symtype(t_symbol *sym, void *type)
+inline int	is_not_external(t_symbol *s)
 {
-	return (!(sym->type - *(t_type*)type));
+	return (!(s->nlist->n_type & N_EXT));
 }
 
-int		mask_nlisttype(t_symbol *sym, void *type)
+inline int	is_external(t_symbol *s)
 {
-	return (sym->nlist->n_type & *(t_type*)type);
+	return (s->nlist->n_type & N_EXT);
 }
 
-int		symbol_filter(t_list **symbols, t_flag flag)
+int			symbol_filter(t_list **symbols, t_flag flag)
 {
-	t_type	symtype;
+	uint64_t	allowed_syms;
 
-	if (!(flag & NM_ALL) && (symtype = SYM_STAB))
-		ft_lst_filterout(symbols, &symtype, cmp_symtype, symbol_free);
-	if ((flag & NM_NO_UNDF) && !(symtype = SYM_UNDF))
-		ft_lst_filterout(symbols, &symtype, cmp_symtype, symbol_free);
-	if ((flag & NM_ONLY_UNDF) && !(symtype = SYM_UNDF))
-		ft_lst_filterout(symbols, &symtype, cmp_no_symtype, symbol_free);
-	if ((flag & NM_NO_LOCAL) && (symtype = N_EXT))
-		ft_lst_filterout(symbols, &symtype, mask_nlisttype, symbol_free);
+	allowed_syms = ~(1 << SYM_STAB);
+	if (flag & NM_ALL)
+		allowed_syms |= (1 << SYM_STAB);
+	if (flag & NM_NO_UNDF)
+		allowed_syms &= ~(1 << SYM_UNDF);
+	if (flag & NM_ONLY_UNDF)
+		allowed_syms &= (1 << SYM_UNDF);
+	ft_lst_filterout(symbols, &allowed_syms, cmp_symtype, symbol_free);
+	if (flag & NM_NO_LOCAL)
+		ft_lst_filterout(symbols, NULL, is_external, symbol_free);
 	return (0);
 }

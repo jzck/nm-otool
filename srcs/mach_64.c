@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fetch_header.c                                     :+:      :+:    :+:   */
+/*   mach_64.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/23 15:56:37 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/07 18:31:01 by jhalford         ###   ########.fr       */
+/*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
+/*   Updated: 2017/10/23 16:42:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,17 @@ void		mach_64_parse(t_machodata *data)
 			seg_64_parse(data, (struct segment_command_64*)lc);
 		lc = (void*)lc + lc->cmdsize;
 	}
+}
+
+void		mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
+{
+	t_machodata		mach;
+
+	mach.sects = NULL;
+	mach.symbols = NULL;
+	mach.file = file;
+	mach_64_parse(&mach);
+	symbol_sort(&mach.symbols, data->flag);
+	symbol_filter(&mach.symbols, data->flag);
+	ft_lstiter(mach.symbols, symbol_format, data);
 }

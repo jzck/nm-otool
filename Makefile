@@ -35,10 +35,9 @@ OTOOL_OBJ	=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
 dump_symtab.c\
-fetch_header.c\
 ft_nm.c\
 ft_otool.c\
-mach_o_parse.c\
+mach_64.c\
 symbol_filter.c\
 symbol_format.c\
 symbol_free.c\

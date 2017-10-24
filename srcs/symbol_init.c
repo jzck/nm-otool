@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/25 21:22:06 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/08 11:02:50 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/23 16:41:15 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ int				symbol_init(t_symbol *symbol,
 	symbol->string = stringtable + array[i].n_un.n_strx;
 	return (0);
 }
+
+/*
+**	Calculate the sym->type field
+*/
 
 static int		symbol_gettype(int type_mask,
 		struct nlist_64 *nlist, struct section_64 *section)
@@ -46,6 +50,10 @@ static int		symbol_gettype(int type_mask,
 	else
 		return (SYM_OTHER);
 }
+
+/*
+**	Construct symbol data
+*/
 
 int				symbol_set(t_symbol *sym, t_machodata *data)
 {

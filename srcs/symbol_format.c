@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/28 20:34:32 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/08 11:34:43 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/23 16:31:36 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	symbol_format_desc(t_symbol *symbol)
 {
 	if (symbol->nlist->n_desc & REFERENCED_DYNAMICALLY)
 		ft_printf(" [referenced dynamically]");
-	if (symbol->nlist->n_type & N_EXT)
+	if (is_external(symbol))
 		ft_printf(" external");
 	else
 	{
@@ -66,11 +66,12 @@ void	symbol_format_full(t_symbol *symbol)
 void	symbol_format_dfl(t_symbol *symbol)
 {
 	t_symbolmap		map;
-	char			c;
 
 	map = g_symbolmap[symbol->type];
-	c = symbol->nlist->n_type & N_EXT ? map.c : map.c + 32;
-	ft_printf(" %c", c);
+	if (is_external(symbol))
+		ft_printf(" %c", map.c);
+	else
+		ft_printf(" %c", map.c + 'a' - 'A');
 	if (symbol->type == SYM_STAB)
 		ft_printf(" %02x %04b %#x",
 				symbol->nlist->n_sect, symbol->nlist->n_desc,

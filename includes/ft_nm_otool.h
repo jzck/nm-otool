@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/08 16:37:58 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/23 16:49:52 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@
 # include <mach-o/nlist.h>
 # include <mach-o/fat.h>
 
-# define IS_MAGIC_64(x)	(x == MH_MAGIC_64 || x == MH_CIGAM_64)
+# define IS_MACH_64(x)	(x == MH_MAGIC_64 || x == MH_CIGAM_64)
+# define IS_MACH_32(x)	(x == MH_MAGIC || x == MH_CIGAM)
 # define IS_FAT(x)		(x == FAT_MAGIC || x == FAT_CIGAM)
 
 /*
@@ -44,8 +45,8 @@
 ** filtering flags
 ** 		-a show all symbols
 ** 		-g filter-out local symbols
-** 		-u show only undefined symbols
 ** 		-U filter-out undefined symbols
+** 		-u show only undefined symbols
 */
 
 # define NM_ALL			(1 << 4)
@@ -120,23 +121,26 @@ struct						s_symbolmap
 extern t_symbolmap	g_symbolmap[];
 extern t_machodata	*g_data;
 
-int							mach_o_parse(t_machodata *data);
-int							fetch_header(t_machodata *data);
-
 int							symbol_init(t_symbol *symbol,
 				char *stringtable, struct nlist_64 *array, int i);
 int							symbol_set(t_symbol *symbol, t_machodata *data);
-int							symbol_sort(t_list **syms, t_flag flag);
-int							symbol_filter(t_list **syms, t_flag flag);
 void						symbol_free(void *data, size_t size);
+
+int							symbol_sort(t_list **syms, t_flag flag);
+
+int							symbol_filter(t_list **syms, t_flag flag);
+int							is_external(t_symbol *s);
+int							is_not_external(t_symbol *s);
 
 int							symbol_format(t_symbol *symbol, t_nmdata *data);
 void						symbol_format_dfl(t_symbol *symbol);
 void						symbol_format_m(t_symbol *symbol);
 void						symbol_format_full(t_symbol *symbol);
 
+void						mach_64_dump(struct mach_header_64 *file,
+				t_nmdata *data);
 void						mach_64_parse(t_machodata *data);
 void						dump_dysymtab(t_machodata *data,
-		struct dysymtab_command *dysymtab);
+				struct dysymtab_command *dysymtab);
 
 #endif
