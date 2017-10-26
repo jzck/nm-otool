@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/23 16:33:42 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/26 18:46:22 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ int		nm_file(void *file, t_nmdata *data)
 	uint32_t	magic;
 
 	magic = *(int*)file;
-	if (IS_MACH_64(magic))
+	if (IS_MACH_32(magic))
 		mach_64_dump(file, data);
-	else if (IS_MACH_32(magic))
+	else if (IS_MACH_64(magic))
 		mach_64_dump(file, data);
 	else if (IS_FAT(magic))
 		ft_printf("{red}unsupported arch:{eoc} magic=%#x(FAT)\n", magic);

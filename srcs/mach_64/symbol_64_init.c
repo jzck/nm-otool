@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   symbol_init.c                                      :+:      :+:    :+:   */
+/*   symbol_64_init.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/25 21:22:06 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/23 16:41:15 by jhalford         ###   ########.fr       */
+/*   Created: 2017/10/26 18:07:28 by jhalford          #+#    #+#             */
+/*   Updated: 2017/10/26 18:23:24 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_machodata	*g_data;
 
-int				symbol_init(t_symbol *symbol,
+int				symbol_64_init(t_symbol_64 *symbol,
 		char *stringtable, struct nlist_64 *array, int i)
 {
 	symbol->type = 0;
@@ -24,11 +24,7 @@ int				symbol_init(t_symbol *symbol,
 	return (0);
 }
 
-/*
-**	Calculate the sym->type field
-*/
-
-static int		symbol_gettype(int type_mask,
+static int		symbol_64_gettype(int type_mask,
 		struct nlist_64 *nlist, struct section_64 *section)
 {
 	if (nlist->n_type & N_STAB)
@@ -51,11 +47,7 @@ static int		symbol_gettype(int type_mask,
 		return (SYM_OTHER);
 }
 
-/*
-**	Construct symbol data
-*/
-
-int				symbol_set(t_symbol *sym, t_machodata *data)
+int				symbol_64_set(t_symbol_64 *sym, t_machodata *data)
 {
 	t_list	*lst;
 
@@ -66,7 +58,7 @@ int				symbol_set(t_symbol *sym, t_machodata *data)
 	}
 	else
 		sym->section = NULL;
-	sym->type = symbol_gettype(
+	sym->type = symbol_64_gettype(
 			sym->nlist->n_type & N_TYPE,
 			sym->nlist,
 			sym->section);

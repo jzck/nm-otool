@@ -6,16 +6,16 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/23 16:42:06 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/26 18:45:25 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
-static void	symtab_parse(t_machodata *data, struct symtab_command *symtab)
+static void	symtab_64_parse(t_machodata *data, struct symtab_command *symtab)
 {
 	int					i;
-	t_symbol			symbol;
+	t_symbol_64			symbol;
 	char				*stringtable;
 	struct nlist_64		*array;
 
@@ -25,8 +25,8 @@ static void	symtab_parse(t_machodata *data, struct symtab_command *symtab)
 	i = -1;
 	while (++i < (int)symtab->nsyms)
 	{
-		symbol_init(&symbol, stringtable, array, i);
-		symbol_set(&symbol, data);
+		symbol_64_init(&symbol, stringtable, array, i);
+		symbol_64_set(&symbol, data);
 		ft_lsteadd(&data->symbols, ft_lstnew(&symbol, sizeof(symbol)));
 	}
 }
@@ -61,7 +61,7 @@ void		mach_64_parse(t_machodata *data)
 	while (++i < ncmds)
 	{
 		if (lc->cmd == LC_SYMTAB)
-			symtab_parse(data, (struct symtab_command*)lc);
+			symtab_64_parse(data, (struct symtab_command*)lc);
 		else if (lc->cmd == LC_DYSYMTAB)
 			data->dysymtab = (struct dysymtab_command*)lc;
 		else if (lc->cmd == LC_SEGMENT_64)
@@ -78,7 +78,7 @@ void		mach_64_dump(struct mach_header_64 *file, t_nmdata *data)
 	mach.symbols = NULL;
 	mach.file = file;
 	mach_64_parse(&mach);
-	symbol_sort(&mach.symbols, data->flag);
-	symbol_filter(&mach.symbols, data->flag);
-	ft_lstiter(mach.symbols, symbol_format, data);
+	symbol_64_sort(&mach.symbols, data->flag);
+	symbol_64_filter(&mach.symbols, data->flag);
+	ft_lstiter(mach.symbols, symbol_64_format, data);
 }

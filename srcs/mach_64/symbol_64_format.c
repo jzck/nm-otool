@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   symbol_format.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/03/28 20:34:32 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/23 16:31:36 by jhalford         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ft_nm_otool.h"
 
 t_symbolmap	g_symbolmap[] =
@@ -25,11 +13,11 @@ t_symbolmap	g_symbolmap[] =
 	{'I', "indirect"},
 };
 
-void	symbol_format_desc(t_symbol *symbol)
+void	symbol_64_format_desc(t_symbol_64 *symbol)
 {
 	if (symbol->nlist->n_desc & REFERENCED_DYNAMICALLY)
 		ft_printf(" [referenced dynamically]");
-	if (is_external(symbol))
+	if (is_external_64(symbol))
 		ft_printf(" external");
 	else
 	{
@@ -39,7 +27,7 @@ void	symbol_format_desc(t_symbol *symbol)
 	}
 }
 
-void	symbol_format_m(t_symbol *symbol)
+void	symbol_64_format_m(t_symbol_64 *symbol)
 {
 	t_symbolmap		map;
 
@@ -48,10 +36,10 @@ void	symbol_format_m(t_symbol *symbol)
 			symbol->section ? symbol->section->segname : map.s,
 			symbol->section ? ',' : 0,
 			symbol->section ? symbol->section->sectname : "");
-	symbol_format_desc(symbol);
+	symbol_64_format_desc(symbol);
 }
 
-void	symbol_format_full(t_symbol *symbol)
+void	symbol_64_format_full(t_symbol_64 *symbol)
 {
 	ft_printf("\t%i %03b|%b|%x|%b \t%i(%s) \t%04x",
 			symbol->pos,
@@ -63,12 +51,12 @@ void	symbol_format_full(t_symbol *symbol)
 			symbol->nlist->n_desc);
 }
 
-void	symbol_format_dfl(t_symbol *symbol)
+void	symbol_64_format_dfl(t_symbol_64 *symbol)
 {
 	t_symbolmap		map;
 
 	map = g_symbolmap[symbol->type];
-	if (is_external(symbol))
+	if (is_external_64(symbol))
 		ft_printf(" %c", map.c);
 	else
 		ft_printf(" %c", map.c + 'a' - 'A');
@@ -78,7 +66,7 @@ void	symbol_format_dfl(t_symbol *symbol)
 				symbol->nlist->n_type);
 }
 
-int		symbol_format(t_symbol *symbol, t_nmdata *data)
+int		symbol_64_format(t_symbol_64 *symbol, t_nmdata *data)
 {
 	if (data->flag & NM_OFORMAT)
 		ft_printf("%s: ", data->filename);
@@ -89,11 +77,11 @@ int		symbol_format(t_symbol *symbol, t_nmdata *data)
 		else
 			ft_printf("%016llx", symbol->nlist->n_value);
 		if (data->flag & NM_MFORMAT)
-			symbol_format_m(symbol);
+			symbol_64_format_m(symbol);
 		else if (data->flag & NM_FULL)
-			symbol_format_full(symbol);
+			symbol_64_format_full(symbol);
 		else
-			symbol_format_dfl(symbol);
+			symbol_64_format_dfl(symbol);
 	}
 	ft_printf(" %s\n", symbol->string);
 	return (0);

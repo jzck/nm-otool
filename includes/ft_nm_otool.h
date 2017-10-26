@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/23 16:49:52 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/26 18:42:47 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ typedef struct s_nmdata		t_nmdata;
 typedef enum e_symtype		t_symtype;
 typedef struct s_symbolmap	t_symbolmap;
 typedef struct s_machodata	t_machodata;
-typedef struct s_symbol		t_symbol;
 
 struct						s_nmdata
 {
@@ -103,44 +102,18 @@ struct						s_machodata
 	struct dysymtab_command	*dysymtab;
 };
 
-struct						s_symbol
-{
-	int						pos;
-	t_symtype				type;
-	char					*string;
-	struct nlist_64			*nlist;
-	struct section_64		*section;
-};
-
 struct						s_symbolmap
 {
 	char					c;
 	char					*s;
 };
 
-extern t_symbolmap	g_symbolmap[];
-extern t_machodata	*g_data;
+# include "mach_64.h"
 
-int							symbol_init(t_symbol *symbol,
-				char *stringtable, struct nlist_64 *array, int i);
-int							symbol_set(t_symbol *symbol, t_machodata *data);
-void						symbol_free(void *data, size_t size);
-
-int							symbol_sort(t_list **syms, t_flag flag);
-
-int							symbol_filter(t_list **syms, t_flag flag);
-int							is_external(t_symbol *s);
-int							is_not_external(t_symbol *s);
-
-int							symbol_format(t_symbol *symbol, t_nmdata *data);
-void						symbol_format_dfl(t_symbol *symbol);
-void						symbol_format_m(t_symbol *symbol);
-void						symbol_format_full(t_symbol *symbol);
-
-void						mach_64_dump(struct mach_header_64 *file,
-				t_nmdata *data);
-void						mach_64_parse(t_machodata *data);
 void						dump_dysymtab(t_machodata *data,
 				struct dysymtab_command *dysymtab);
+
+extern t_symbolmap	g_symbolmap[];
+extern t_machodata	*g_data;
 
 #endif

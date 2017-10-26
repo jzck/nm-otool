@@ -6,7 +6,7 @@
 #    By: wescande <wescande@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/08/29 21:32:58 by wescande          #+#    #+#              #
-#    Updated: 2017/10/07 17:50:04 by jhalford         ###   ########.fr        #
+#    Updated: 2017/10/26 19:15:02 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,23 +37,31 @@ SRC_BASE	=	\
 dump_symtab.c\
 ft_nm.c\
 ft_otool.c\
-mach_64.c\
-symbol_filter.c\
-symbol_format.c\
-symbol_free.c\
-symbol_init.c\
-symbol_sort.c
+mach_64/mach_64.c\
+mach_64/symbol_64_filter.c\
+mach_64/symbol_64_format.c\
+mach_64/symbol_64_free.c\
+mach_64/symbol_64_init.c\
+mach_64/symbol_64_sort.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
-OBJS		=	$(addprefix $(OBJ_DIR), $(SRC_BASE:.c=.o))
+OBJS		=	$(addprefix $(OBJ_DIR), $($(notdir SRC_BASE):.c=.o))
 OBJS		:=	$(filter-out $(NM_OBJ), $(OBJS))
 OBJS		:=	$(filter-out $(OTOOL_OBJ), $(OBJS))
 NB			=	$(words $(SRC_BASE))
 INDEX		=	0
 
-all :
+MACH_64_SRC	:=	$(wildcard $(SRC_DIR)mach_64/*)
+MACH_SRC	:=	$(subst _64,_32, $(MACH_64_SRC:.c=.p))
+
+all: $(MACH_SRC)
 	@make -C $(LIBFT_DIR)
 	@make -j $(NAME)
+
+# $(SRC_DIR)/mach/%.c: $(SRC_DIR)/mach_64/%.c
+$(MACH_SRC):
+	@mkdir -p $(SRC_DIR)/mach
+	@echo "$@ ---> $(subst _32,_64, $@)"
 
 ft_nm:		$(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(NM_OBJ)
 	@$(CC) $(OBJS) -o $@ \
@@ -111,6 +119,6 @@ re:				fclean all
 
 relib:			fcleanlib $(LIBFT_LIB)
 
-.PHONY :		fclean clean re relib cleanlib fcleanlib
+.PHONY :		fclean clean re relib cleanlib fcleanlib $(MACH_SRC)
 
 -include $(OBJS:.o=.d)
