@@ -34,15 +34,21 @@ NM_OBJ		=	$(OBJ_DIR)ft_nm.o
 OTOOL_OBJ	=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
-dump_symtab.c\
-ft_nm.c\
 ft_otool.c\
-mach_64/mach_64.c\
-mach_64/symbol_64_filter.c\
-mach_64/symbol_64_format.c\
-mach_64/symbol_64_free.c\
 mach_64/symbol_64_init.c\
-mach_64/symbol_64_sort.c
+mach_64/symbol_64_filter.c\
+mach_64/symbol_64_sort.c\
+mach_64/mach_64.c\
+mach_64/symbol_64_free.c\
+mach_64/symbol_64_format.c\
+mach_32/symbol_32_free.c\
+mach_32/symbol_32_sort.c\
+mach_32/mach_32.c\
+mach_32/symbol_32_format.c\
+mach_32/symbol_32_filter.c\
+mach_32/symbol_32_init.c\
+ft_nm.c\
+dump_symtab.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $($(notdir SRC_BASE):.c=.o))
@@ -52,16 +58,20 @@ NB			=	$(words $(SRC_BASE))
 INDEX		=	0
 
 MACH_64_SRC	:=	$(wildcard $(SRC_DIR)mach_64/*)
-MACH_SRC	:=	$(subst _64,_32, $(MACH_64_SRC:.c=.p))
+MACH_64_SRC	+=	$(INC_DIR)mach_64.h
+MACH_SRC	:=	$(subst _64,_32, $(MACH_64_SRC))
 
-all: $(MACH_SRC)
+SHELL		:=	/bin/bash
+
+all:
 	@make -C $(LIBFT_DIR)
 	@make -j $(NAME)
 
 # $(SRC_DIR)/mach/%.c: $(SRC_DIR)/mach_64/%.c
 $(MACH_SRC):
-	@mkdir -p $(SRC_DIR)/mach
+	@mkdir -p $(SRC_DIR)/mach_32
 	@echo "$@ ---> $(subst _32,_64, $@)"
+	@sed s/_64/_32/g $(subst _32,_64, $@) > $@
 
 ft_nm:		$(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(NM_OBJ)
 	@$(CC) $(OBJS) -o $@ \

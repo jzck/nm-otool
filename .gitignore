@@ -1,3 +1,7 @@
 ft_nm
 ft_otool
-tests
+srcs/mach_32
+includes/mach_32.h
+tests/*
+!tests/*.c
+!tests/*.sh
