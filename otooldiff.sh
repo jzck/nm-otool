@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
-make
-diff <(./ft_otool $@) <(otool -t $@)
+diff <(./ft_otool $@) <(otool $@)
 if [ $? -eq 0 ]; then
 	echo "OK ✅"
 else

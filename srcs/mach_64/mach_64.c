@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 11:32:35 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/30 16:58:03 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static void	symtab_64_parse(t_machodata *data, struct symtab_command *symtab)
 	struct nlist_64		*array;
 
 	data->symtab = symtab;
-	stringtable = data->file + symtab->stroff;
-	array = (struct nlist_64*)(data->file + symtab->symoff);
+	stringtable = data->file + endian(symtab->stroff, 32);
+	array = (struct nlist_64*)(data->file + endian(symtab->symoff, 32));
 	i = -1;
 	while (++i < (int)symtab->nsyms)
 	{
@@ -37,7 +37,7 @@ static void	seg_64_parse(t_machodata *data, struct segment_command_64 *seg)
 	uint32_t			i;
 	struct section_64	*sect;
 
-	nsects = seg->nsects;
+	nsects = endian(seg->nsects, 32);
 	sect = (void*)(seg + 1);
 	i = -1;
 	while (++i < nsects)
@@ -55,17 +55,15 @@ void		mach_64_parse(t_machodata *data)
 	struct mach_header_64	*header;
 
 	header = data->file;
-	ncmds = header->ncmds;
+	ncmds = endian(header->ncmds, 32);
 	lc = (void*)(header + 1);
 	i = -1;
 	while (++i < ncmds)
 	{
-		if (lc->cmd == LC_SYMTAB)
+		if (endian(lc->cmd, 32) == LC_SYMTAB)
 			symtab_64_parse(data, (struct symtab_command*)lc);
-		else if (lc->cmd == LC_DYSYMTAB)
-			data->dysymtab = (struct dysymtab_command*)lc;
 		else if (lc->cmd == LC_SEGMENT_64)
 			seg_64_parse(data, (struct segment_command_64*)lc);
-		lc = (void*)lc + lc->cmdsize;
+		lc = (void*)lc + endian(lc->cmdsize, 32);
 	}
 }

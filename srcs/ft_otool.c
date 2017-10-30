@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 12:26:10 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/30 17:31:44 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ t_cliopts	g_otool_opts[] =
 	{'t', NULL, OTOOL_TEXT, 0, NULL, 0},
 	{'d', NULL, OTOOL_DATA, 0, NULL, 0},
 };
+int			g_rev = 0;
 
 void	otool_file(void *file, t_otooldata *data)
 {
 	uint32_t			magic;
 
 	magic = *(int *)file;
+	g_rev = IS_REV(magic);
 	if (IS_MACH_32(magic))
 		otool_mach(file, data);
 	else if (IS_MACH_64(magic))
@@ -44,8 +46,7 @@ int		otool(int ac, char **av, t_otooldata data)
 	i = data.av_data - av;
 	while (i < ac && av[i])
 	{
-		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
-			ft_printf("%s:\n", av[i]);
+		ft_printf("%s:\n", av[i]);
 		if ((fd = open((av[i]), O_RDONLY)) < 0)
 			return (1);
 		if ((fstat(fd, &buf)) < 0)

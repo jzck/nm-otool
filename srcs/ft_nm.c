@@ -6,14 +6,16 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 12:26:03 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/30 18:36:32 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
+#include <sys/utsname.h>
 #define NM_USAGE	"usage: nm [-agmnpruU] filename ..."
 
 t_machodata	*g_data = NULL;
+int			g_rev = 0;
 
 t_cliopts	g_nm_opts[] =
 {
@@ -29,23 +31,42 @@ t_cliopts	g_nm_opts[] =
 	{0xff, "full", NM_FULL, 0, NULL, 0},
 	{'o', NULL, NM_OFORMAT, 0, NULL, 0},
 	{'m', NULL, NM_MFORMAT, 0, NULL, 0},
-
-	{'A', NULL, 0, 0, NULL, 0},
-	{'x', NULL, 0, 0, NULL, 0},
-	{'j', NULL, 0, 0, NULL, 0},
 };
+
+int		nm_file(void *file, t_nmdata *data);
+
+int		nm_fat(struct fat_header *fat, t_nmdata *data)
+{
+	void *arch;
+	struct utsname	host;
+
+	uname(&host);
+	NXGetLocalArchInfo();
+
+	arch = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL);
+	if (!arch)
+		ft_printf("{red}fat doesn't have x86_64 !{eoc}");
+	else
+	{
+		uint32_t	magic;
+		magic = *(int*)arch;
+		nm_file(arch, data);
+	}
+	return (0);
+}
 
 int		nm_file(void *file, t_nmdata *data)
 {
 	uint32_t	magic;
 
 	magic = *(int*)file;
+	g_rev = IS_REV(magic);
 	if (IS_MACH_32(magic))
 		nm_mach(file, data);
 	else if (IS_MACH_64(magic))
 		nm_mach_64(file, data);
 	else if (IS_FAT(magic))
-		ft_printf("{red}unsupported arch:{eoc} magic=%#x(FAT)\n", magic);
+		nm_fat(file, data);
 	else
 		ft_printf("{red}unsupported arch:{eoc} magic=%#x\n", magic);
 	return (0);

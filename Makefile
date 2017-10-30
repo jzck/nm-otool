@@ -34,7 +34,10 @@ NM_OBJ		=	$(OBJ_DIR)ft_nm.o
 OTOOL_OBJ	=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
+bswap.c\
 dump_symtab.c\
+endianness.c\
+fat.c\
 ft_nm.c\
 ft_otool.c\
 mach/get_section.c\

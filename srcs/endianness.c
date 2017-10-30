@@ -1,26 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   nm_mach_64.c                                       :+:      :+:    :+:   */
+/*   endianese.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/10/30 11:03:04 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 15:50:23 by jhalford         ###   ########.fr       */
+/*   Created: 2017/10/30 15:18:54 by jhalford          #+#    #+#             */
+/*   Updated: 2017/10/30 15:58:55 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
-void		nm_mach_64(struct mach_header_64 *file, t_nmdata *data)
-{
-	t_machodata		mach;
+int		g_rev;
 
-	mach.sects = NULL;
-	mach.symbols = NULL;
-	mach.file = file;
-	mach_64_parse(&mach);
-	symbol_64_sort(&mach.symbols, data->flag);
-	symbol_64_filter(&mach.symbols, data->flag);
-	ft_lstiter(mach.symbols, symbol_64_format, data);
+inline uint64_t		endian(uint64_t n, uint8_t size)
+{
+	if (g_rev)
+	{
+		if (size == 8)
+			return (bswap_8(n));
+		else if (size == 16)
+			return (bswap_16(n));
+		else if (size == 32)
+			return (bswap_32(n));
+		else if (size == 64)
+			return (bswap_64(n));
+		return (bswap_32(n));
+	}
+	return (n);
 }
