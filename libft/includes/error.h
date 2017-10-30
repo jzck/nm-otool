@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/14 15:34:21 by jhalford          #+#    #+#             */
-/*   Updated: 2017/05/15 17:37:29 by ariard           ###   ########.fr       */
+/*   Updated: 2017/10/30 10:06:10 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 */
 # define DG_MSG		"{inv}{ran}%5i{yel}%21s {bol}{blu}%-3d{eoc}"
 # define DG_ARGS	getpid(), getpid(), ft_path_notdir(__FILE__), __LINE__
-# define DG(s, ...)	ft_dprintf(STDBUG,DG_MSG s "{eoc}\n",DG_ARGS,##__VA_ARGS__)
+# define DG(s, ...)	ft_dprintf(STDERR,DG_MSG s "{eoc}\n",DG_ARGS,##__VA_ARGS__)
 
 /*
 ** DEBUG with no malloc

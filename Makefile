@@ -6,7 +6,7 @@
 #    By: wescande <wescande@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/08/29 21:32:58 by wescande          #+#    #+#              #
-#    Updated: 2017/10/26 19:15:02 by jhalford         ###   ########.fr        #
+#    Updated: 2017/10/30 12:22:10 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,21 +34,27 @@ NM_OBJ		=	$(OBJ_DIR)ft_nm.o
 OTOOL_OBJ	=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
-ft_otool.c\
-mach_64/symbol_64_init.c\
-mach_64/symbol_64_filter.c\
-mach_64/symbol_64_sort.c\
-mach_64/mach_64.c\
-mach_64/symbol_64_free.c\
-mach_64/symbol_64_format.c\
-mach_32/symbol_32_free.c\
-mach_32/symbol_32_sort.c\
-mach_32/mach_32.c\
-mach_32/symbol_32_format.c\
-mach_32/symbol_32_filter.c\
-mach_32/symbol_32_init.c\
+dump_symtab.c\
 ft_nm.c\
-dump_symtab.c
+ft_otool.c\
+mach/get_section.c\
+mach/mach.c\
+mach/nm_mach.c\
+mach/otool_mach.c\
+mach/symbol_filter.c\
+mach/symbol_format.c\
+mach/symbol_free.c\
+mach/symbol_init.c\
+mach/symbol_sort.c\
+mach_64/get_section_64.c\
+mach_64/mach_64.c\
+mach_64/nm_mach_64.c\
+mach_64/otool_mach_64.c\
+mach_64/symbol_64_filter.c\
+mach_64/symbol_64_format.c\
+mach_64/symbol_64_free.c\
+mach_64/symbol_64_init.c\
+mach_64/symbol_64_sort.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $($(notdir SRC_BASE):.c=.o))
@@ -57,21 +63,11 @@ OBJS		:=	$(filter-out $(OTOOL_OBJ), $(OBJS))
 NB			=	$(words $(SRC_BASE))
 INDEX		=	0
 
-MACH_64_SRC	:=	$(wildcard $(SRC_DIR)mach_64/*)
-MACH_64_SRC	+=	$(INC_DIR)mach_64.h
-MACH_SRC	:=	$(subst _64,_32, $(MACH_64_SRC))
-
 SHELL		:=	/bin/bash
 
 all:
 	@make -C $(LIBFT_DIR)
 	@make -j $(NAME)
-
-# $(SRC_DIR)/mach/%.c: $(SRC_DIR)/mach_64/%.c
-$(MACH_SRC):
-	@mkdir -p $(SRC_DIR)/mach_32
-	@echo "$@ ---> $(subst _32,_64, $@)"
-	@sed s/_64/_32/g $(subst _32,_64, $@) > $@
 
 ft_nm:		$(LIBFT_LIB) $(OBJ_DIR) $(OBJS) $(NM_OBJ)
 	@$(CC) $(OBJS) -o $@ \
@@ -129,6 +125,6 @@ re:				fclean all
 
 relib:			fcleanlib $(LIBFT_LIB)
 
-.PHONY :		fclean clean re relib cleanlib fcleanlib $(MACH_SRC)
+.PHONY :		fclean clean re relib cleanlib fcleanlib
 
 -include $(OBJS:.o=.d)

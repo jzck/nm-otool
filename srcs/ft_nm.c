@@ -6,12 +6,12 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/26 18:46:22 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/30 12:26:03 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
-#define NM_USAGE	"usage: nm [-agmnpruU]"
+#define NM_USAGE	"usage: nm [-agmnpruU] filename ..."
 
 t_machodata	*g_data = NULL;
 
@@ -41,9 +41,9 @@ int		nm_file(void *file, t_nmdata *data)
 
 	magic = *(int*)file;
 	if (IS_MACH_32(magic))
-		mach_64_dump(file, data);
+		nm_mach(file, data);
 	else if (IS_MACH_64(magic))
-		mach_64_dump(file, data);
+		nm_mach_64(file, data);
 	else if (IS_FAT(magic))
 		ft_printf("{red}unsupported arch:{eoc} magic=%#x(FAT)\n", magic);
 	else

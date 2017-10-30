@@ -1,41 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mach_64.c                                          :+:      :+:    :+:   */
+/*   mach.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 11:32:35 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/30 11:32:11 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
-static void	symtab_64_parse(t_machodata *data, struct symtab_command *symtab)
+static void	symtab_parse(t_machodata *data, struct symtab_command *symtab)
 {
 	int					i;
-	t_symbol_64			symbol;
+	t_symbol			symbol;
 	char				*stringtable;
-	struct nlist_64		*array;
+	struct nlist		*array;
 
 	data->symtab = symtab;
 	stringtable = data->file + symtab->stroff;
-	array = (struct nlist_64*)(data->file + symtab->symoff);
+	array = (struct nlist*)(data->file + symtab->symoff);
 	i = -1;
 	while (++i < (int)symtab->nsyms)
 	{
-		symbol_64_init(&symbol, stringtable, array, i);
-		symbol_64_set(&symbol, data);
+		symbol_init(&symbol, stringtable, array, i);
+		symbol_set(&symbol, data);
 		ft_lsteadd(&data->symbols, ft_lstnew(&symbol, sizeof(symbol)));
 	}
 }
 
-static void	seg_64_parse(t_machodata *data, struct segment_command_64 *seg)
+static void	seg_parse(t_machodata *data, struct segment_command *seg)
 {
 	uint32_t			nsects;
 	uint32_t			i;
-	struct section_64	*sect;
+	struct section	*sect;
 
 	nsects = seg->nsects;
 	sect = (void*)(seg + 1);
@@ -47,12 +47,12 @@ static void	seg_64_parse(t_machodata *data, struct segment_command_64 *seg)
 	}
 }
 
-void		mach_64_parse(t_machodata *data)
+void		mach_parse(t_machodata *data)
 {
 	uint32_t				ncmds;
 	uint32_t				i;
 	struct load_command		*lc;
-	struct mach_header_64	*header;
+	struct mach_header	*header;
 
 	header = data->file;
 	ncmds = header->ncmds;
@@ -61,11 +61,11 @@ void		mach_64_parse(t_machodata *data)
 	while (++i < ncmds)
 	{
 		if (lc->cmd == LC_SYMTAB)
-			symtab_64_parse(data, (struct symtab_command*)lc);
+			symtab_parse(data, (struct symtab_command*)lc);
 		else if (lc->cmd == LC_DYSYMTAB)
 			data->dysymtab = (struct dysymtab_command*)lc;
-		else if (lc->cmd == LC_SEGMENT_64)
-			seg_64_parse(data, (struct segment_command_64*)lc);
+		else if (lc->cmd == LC_SEGMENT)
+			seg_parse(data, (struct segment_command*)lc);
 		lc = (void*)lc + lc->cmdsize;
 	}
 }
