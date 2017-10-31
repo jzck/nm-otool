@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 16:58:03 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 18:06:12 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	symtab_64_parse(t_machodata *data, struct symtab_command *symtab)
 	stringtable = data->file + endian(symtab->stroff, 32);
 	array = (struct nlist_64*)(data->file + endian(symtab->symoff, 32));
 	i = -1;
-	while (++i < (int)symtab->nsyms)
+	while (++i < (int)endian(symtab->nsyms,32))
 	{
 		symbol_64_init(&symbol, stringtable, array, i);
 		symbol_64_set(&symbol, data);
@@ -62,7 +62,7 @@ void		mach_64_parse(t_machodata *data)
 	{
 		if (endian(lc->cmd, 32) == LC_SYMTAB)
 			symtab_64_parse(data, (struct symtab_command*)lc);
-		else if (lc->cmd == LC_SEGMENT_64)
+		else if (endian(lc->cmd, 32) == LC_SEGMENT_64)
 			seg_64_parse(data, (struct segment_command_64*)lc);
 		lc = (void*)lc + endian(lc->cmdsize, 32);
 	}

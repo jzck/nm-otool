@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:31:27 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/26 18:44:51 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 16:36:23 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ int			cmp_symtype(t_symbol *sym, void *type)
 
 inline int	is_not_external(t_symbol *s)
 {
-	return (!(s->nlist->n_type & N_EXT));
+	return (!(s->nlist.n_type & N_EXT));
 }
 
 inline int	is_external(t_symbol *s)
 {
-	return (s->nlist->n_type & N_EXT);
+	return (s->nlist.n_type & N_EXT);
 }
 
 int			symbol_filter(t_list **symbols, t_flag flag)

@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:39:31 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 12:22:12 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 16:30:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ struct						s_symbol_64
 	int						pos;
 	t_symtype				type;
 	char					*string;
-	struct nlist_64			*nlist;
+	struct nlist_64			nlist;
 	struct section_64		*section;
 };
 

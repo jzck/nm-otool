@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:07:28 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/26 18:23:24 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 17:52:38 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,20 @@ int				symbol_64_init(t_symbol_64 *symbol,
 {
 	symbol->type = 0;
 	symbol->pos = i;
-	symbol->nlist = array + i;
-	symbol->string = stringtable + array[i].n_un.n_strx;
+	symbol->nlist.n_type = endian(array[i].n_type, 8);
+	symbol->nlist.n_sect = endian(array[i].n_sect, 8);
+	symbol->nlist.n_desc = endian(array[i].n_desc, 16);
+	symbol->nlist.n_value = endian(array[i].n_value, 64);
+	symbol->string = stringtable + endian(array[i].n_un.n_strx, 32);
 	return (0);
 }
 
 static int		symbol_64_gettype(int type_mask,
-		struct nlist_64 *nlist, struct section_64 *section)
+		struct nlist_64 nlist, struct section_64 *section)
 {
-	if (nlist->n_type & N_STAB)
+	if (nlist.n_type & N_STAB)
 		return (SYM_STAB);
-	else if (type_mask == N_UNDF && nlist->n_type & N_EXT && nlist->n_value)
+	else if (type_mask == N_UNDF && nlist.n_type & N_EXT && nlist.n_value)
 		return (SYM_COMMON);
 	else if (type_mask == N_UNDF)
 		return (SYM_UNDF);
@@ -51,15 +54,13 @@ int				symbol_64_set(t_symbol_64 *sym, t_machodata *data)
 {
 	t_list	*lst;
 
-	if (sym->nlist->n_sect)
-	{
-		lst = ft_lst_at(data->sects, sym->nlist->n_sect - 1);
+	if (sym->nlist.n_sect &&
+			(lst = ft_lst_at(data->sects, sym->nlist.n_sect - 1)))
 		sym->section = *(struct section_64**)(lst->content);
-	}
 	else
 		sym->section = NULL;
 	sym->type = symbol_64_gettype(
-			sym->nlist->n_type & N_TYPE,
+			sym->nlist.n_type & N_TYPE,
 			sym->nlist,
 			sym->section);
 	return (0);

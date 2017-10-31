@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:46:23 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 12:00:39 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 19:15:26 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,13 @@
 # define OTOOL_TEXT		(1 << 0)
 # define OTOOL_DATA		(1 << 1)
 
-typedef 	t_data_template	t_otooldata;
+typedef struct s_otooldata		t_otooldata;
+
+struct				s_otooldata
+{
+	t_flag			flag;
+	char			**av_data;
+	char			*filename;
+};
 
 #endif

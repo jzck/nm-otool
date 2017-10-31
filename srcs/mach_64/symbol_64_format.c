@@ -15,14 +15,14 @@ t_symbolmap	g_symbolmap_64[] =
 
 void	symbol_64_format_desc(t_symbol_64 *symbol)
 {
-	if (symbol->nlist->n_desc & REFERENCED_DYNAMICALLY)
+	if (symbol->nlist.n_desc & REFERENCED_DYNAMICALLY)
 		ft_printf(" [referenced dynamically]");
 	if (is_external_64(symbol))
 		ft_printf(" external");
 	else
 	{
 		ft_printf(" non-external");
-		if (symbol->nlist->n_type & N_PEXT)
+		if (symbol->nlist.n_type & N_PEXT)
 			ft_printf(" (was a private external)");
 	}
 }
@@ -43,12 +43,12 @@ void	symbol_64_format_full(t_symbol_64 *symbol)
 {
 	ft_printf("\t%i %03b|%b|%x|%b \t%i(%s) \t%04x",
 			symbol->pos,
-			(symbol->nlist->n_type & N_STAB) >> 5,
-			(symbol->nlist->n_type & N_PEXT) >> 4,
-			symbol->nlist->n_type & N_TYPE,
-			symbol->nlist->n_type & N_EXT,
-			symbol->nlist->n_sect, symbol->section->sectname,
-			symbol->nlist->n_desc);
+			(symbol->nlist.n_type & N_STAB) >> 5,
+			(symbol->nlist.n_type & N_PEXT) >> 4,
+			symbol->nlist.n_type & N_TYPE,
+			symbol->nlist.n_type & N_EXT,
+			symbol->nlist.n_sect, symbol->section->sectname,
+			symbol->nlist.n_desc);
 }
 
 void	symbol_64_format_dfl(t_symbol_64 *symbol)
@@ -62,8 +62,8 @@ void	symbol_64_format_dfl(t_symbol_64 *symbol)
 		ft_printf(" %c", map.c + 'a' - 'A');
 	if (symbol->type == SYM_STAB)
 		ft_printf(" %02x %04b %#x",
-				symbol->nlist->n_sect, symbol->nlist->n_desc,
-				symbol->nlist->n_type);
+				symbol->nlist.n_sect, symbol->nlist.n_desc,
+				symbol->nlist.n_type);
 }
 
 int		symbol_64_format(t_symbol_64 *symbol, t_nmdata *data)
@@ -75,7 +75,7 @@ int		symbol_64_format(t_symbol_64 *symbol, t_nmdata *data)
 		if (symbol->type == SYM_UNDF)
 			ft_printf("%16s", " ");
 		else
-			ft_printf("%016llx", symbol->nlist->n_value);
+			ft_printf("%016llx", symbol->nlist.n_value);
 		if (data->flag & NM_MFORMAT)
 			symbol_64_format_m(symbol);
 		else if (data->flag & NM_FULL)
@@ -83,6 +83,8 @@ int		symbol_64_format(t_symbol_64 *symbol, t_nmdata *data)
 		else
 			symbol_64_format_dfl(symbol);
 	}
-	ft_printf(" %s\n", symbol->string);
+	ft_putchar(' ');
+	ft_putstr(symbol->string);
+	ft_putchar('\n');
 	return (0);
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 diff <(./ft_nm $@) <(nm $@)
 if [ $? -eq 0 ]; then
-	echo "OK ✅"
+	echo "nm $@\t	OK ✅ "
 else
-	echo "ERROR ❎"
+	echo "nm $@\t	ERROR ✅ "
 fi

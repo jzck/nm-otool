@@ -6,12 +6,11 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 18:36:32 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 19:45:02 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
-#include <sys/utsname.h>
 #define NM_USAGE	"usage: nm [-agmnpruU] filename ..."
 
 t_machodata	*g_data = NULL;
@@ -31,45 +30,54 @@ t_cliopts	g_nm_opts[] =
 	{0xff, "full", NM_FULL, 0, NULL, 0},
 	{'o', NULL, NM_OFORMAT, 0, NULL, 0},
 	{'m', NULL, NM_MFORMAT, 0, NULL, 0},
+	{0, 0, 0, 0, 0, 0},
 };
 
-int		nm_file(void *file, t_nmdata *data);
+void	nm_single_file(void *file, t_nmdata *data);
 
-int		nm_fat(struct fat_header *fat, t_nmdata *data)
+void	nm_fat_file(struct fat_header *fat, t_nmdata *data)
 {
-	void *arch;
-	struct utsname	host;
+	uint32_t		narch;
+	struct fat_arch	*obj;
 
-	uname(&host);
-	NXGetLocalArchInfo();
-
-	arch = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL);
-	if (!arch)
-		ft_printf("{red}fat doesn't have x86_64 !{eoc}");
+	g_rev = IS_REV(fat);
+	obj = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL);
+	if (obj)
+		nm_single_file(obj, data);
 	else
 	{
-		uint32_t	magic;
-		magic = *(int*)arch;
-		nm_file(arch, data);
+		narch = endian(fat->nfat_arch, 32);
+		obj = (struct fat_arch*)(fat + 1);
+		while (narch--)	
+		{
+			const NXArchInfo *arch = NXGetArchInfoFromCpuType(
+					endian(obj->cputype, 32),
+					endian(obj->cpusubtype, 32));
+			ft_printf("\n%s (for architecture %s):\n", data->filename, arch->name);
+			nm_single_file((void*)fat + endian(obj->offset, 32), data);
+			g_rev = IS_REV(fat);
+			++obj;
+		}
 	}
-	return (0);
 }
 
-int		nm_file(void *file, t_nmdata *data)
+void	nm_single_file(void *file, t_nmdata *data)
 {
-	uint32_t	magic;
-
-	magic = *(int*)file;
-	g_rev = IS_REV(magic);
-	if (IS_MACH_32(magic))
+	g_rev = IS_REV(file);
+	if (IS_MACH_32(file))
 		nm_mach(file, data);
-	else if (IS_MACH_64(magic))
+	else if (IS_MACH_64(file))
 		nm_mach_64(file, data);
-	else if (IS_FAT(magic))
-		nm_fat(file, data);
 	else
-		ft_printf("{red}unsupported arch:{eoc} magic=%#x\n", magic);
-	return (0);
+	{
+		const NXArchInfo *arch = NXGetArchInfoFromCpuType(
+				endian(*((int32_t*)file + 1), 32),
+				endian(*((int32_t*)file + 2), 32));
+		if (arch)
+			ft_printf("{red}%s unsupported architecture{eoc}\n", arch->name);
+		else
+			ft_dprintf(2, "unknown architecture, magic=%#x\n", *((int32_t*)file));
+	}
 }
 
 int		nm(int ac, char **av, t_nmdata data)
@@ -77,14 +85,13 @@ int		nm(int ac, char **av, t_nmdata data)
 	int				i;
 	struct stat		buf;
 	int				fd;
-	char			*file;
+	void			*file;
 
 	i = data.av_data - av;
 	while (i < ac && av[i])
 	{
+		g_rev = 0;
 		data.filename = av[i];
-		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
-			ft_printf("%c%s:\n", i - (data.av_data - av) ? '\n' : 0, av[i]);
 		if ((fd = open((data.filename), O_RDONLY)) < 0)
 			return (1);
 		if ((fstat(fd, &buf)) < 0)
@@ -92,7 +99,12 @@ int		nm(int ac, char **av, t_nmdata data)
 		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
 				== MAP_FAILED)
 			return (1);
-		nm_file(file, &data);
+		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
+			ft_printf("\n%s:\n", data.filename);
+		if (IS_FAT(file))
+			nm_fat_file(file, &data);
+		else
+			nm_single_file(file, &data);
 		if (munmap(file, buf.st_size))
 			return (1);
 		i++;
