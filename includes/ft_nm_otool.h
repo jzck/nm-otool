@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:36:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 16:03:56 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:20:22 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,18 @@
 
 # include "mach_64.h"
 # include "mach.h"
+# include "ppc.h"
 
-# define IS_MACH_64(x)	(*(uint32_t*)x == MH_MAGIC_64 || *(uint32_t*)x == MH_CIGAM_64)
-# define IS_MACH_32(x)	(*(uint32_t*)x == MH_MAGIC || *(uint32_t*)x == MH_CIGAM)
-# define IS_FAT(x)		(*(uint32_t*)x == FAT_MAGIC || *(uint32_t*)x == FAT_CIGAM)
-# define IS_REV(x)		(*(uint32_t*)x == MH_CIGAM  || *(uint32_t*)x == MH_CIGAM_64 || *(uint32_t*)x == FAT_CIGAM)
+typedef unsigned int	t_u;
 
-uint64_t		endian(uint64_t n, uint8_t size);
-uint8_t			bswap_8(uint8_t x);
-uint16_t		bswap_16(uint16_t x);
-uint32_t		bswap_32(uint32_t x);
-uint64_t		bswap_64(uint64_t x);
+# define IS_MACH_64(x)	(*(t_u*)x == MH_MAGIC_64||*(t_u*)x == MH_CIGAM_64)
+# define IS_MACH_32(x)	(*(t_u*)x == MH_MAGIC||*(t_u*)x == MH_CIGAM)
+# define IS_FAT(x)		(*(t_u*)x == FAT_MAGIC||*(t_u*)x == FAT_CIGAM)
+# define IS_REV(x) ({t_u m=*(t_u*)x;m==MH_CIGAM||m==MH_CIGAM_64||m==FAT_CIGAM;})
 
-void			*fat_extract(struct fat_header *fat,
+uint64_t				endian(uint64_t n, uint8_t size);
+
+void					*fat_extract(struct fat_header *fat,
 					cpu_type_t cputype,
 					cpu_subtype_t cpusubtype);
 

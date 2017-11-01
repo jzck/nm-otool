@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/20 15:41:59 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 15:43:39 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 11:53:22 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,23 @@
 # define FT_MAX(a, b) ((a) > (b) ? (a) : (b))
 # define FT_DIST(a, b) FT_ABS((a) - (b))
 
-char	*ft_itoa(int n);
-char	*ft_itoa_base(int nbr, char *base, char *flags);
-char	*ft_lltoa_base(long long nbr, char *base, char *flags);
-char	*ft_ulltoa_base(unsigned long long nbr, char *base);
-char	*ft_uitoa_base(unsigned int nbr, char *base);
-size_t	ft_ilen(int n);
-size_t	ft_ilen_base(int n, int base);
-size_t	ft_uilen(unsigned int n);
-size_t	ft_lllen(long long n);
-size_t	ft_lllen_base(long long n, int base);
+char		*ft_itoa(int n);
+char		*ft_itoa_base(int nbr, char *base, char *flags);
+char		*ft_lltoa_base(long long nbr, char *base, char *flags);
+char		*ft_ulltoa_base(unsigned long long nbr, char *base);
+char		*ft_uitoa_base(unsigned int nbr, char *base);
+size_t		ft_ilen(int n);
+size_t		ft_ilen_base(int n, int base);
+size_t		ft_uilen(unsigned int n);
+size_t		ft_lllen(long long n);
+size_t		ft_lllen_base(long long n, int base);
 
-int		ft_addrcmp(void *a, void *b);
-void	*id(void *data);
+int			ft_addrcmp(void *a, void *b);
+void		*id(void *data);
+
+uint8_t		bswap_8(uint8_t x);
+uint16_t	bswap_16(uint16_t x);
+uint32_t	bswap_32(uint32_t x);
+uint64_t	bswap_64(uint64_t x);
 
 #endif

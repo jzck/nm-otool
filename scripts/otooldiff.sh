@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 diff <(./ft_otool $@) <(otool $@)
 if [ $? -eq 0 ]; then
-	echo "otool $@\t	OK ✅ "
+	echo "OK    ✅    otool $@"
 else
-	echo "otool $@\t	ERROR ✅ "
+	echo "ERROR ❎    otool $@"
 fi

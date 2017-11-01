@@ -108,6 +108,7 @@ lst/lst_insert_sort.c\
 lst/pop.c\
 lst/push.c\
 lst/top.c\
+math/bswap.c\
 math/ft_addrcmp.c\
 math/ft_ilen.c\
 math/ft_ilen_base.c\
@@ -144,6 +145,7 @@ printing/ft_putendl.c\
 printing/ft_putnbr.c\
 printing/ft_putstr.c\
 printing/hexdump.c\
+printing/hexdump_int.c\
 rs/rs.c\
 sstr/ft_sstradd.c\
 sstr/ft_sstrcat.c\

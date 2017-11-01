@@ -6,7 +6,7 @@
 /*   By: jhalford <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/07 13:49:04 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 11:25:37 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:58:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,11 @@ int		ft_putendl_fd(char const *s, int fd);
 int		ft_putnbr_fd(long n, int fd);
 int		ft_putnbr_hex_fd(long n, int fd);
 
-void	*hexdump(void *addr, uint32_t offset, uint32_t size);
-void	*hexdump_64(void *addr, uint64_t offset, uint64_t size);
+void	*hexdump(void *addr, uint32_t offset, uint32_t size, int swap);
+void	*hexdump_64(void *addr, uint64_t offset, uint64_t size, int swap);
+
+void	*hexdump_int(void *addr, uint32_t offset, uint32_t size, int swap);
+void	*hexdump_64_int(void *addr, uint64_t offset, uint64_t size, int swap);
 
 void	*ft_realloc(void *data, int size);
 

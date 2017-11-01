@@ -6,11 +6,11 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 15:20:32 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 15:53:14 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:38:00 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_nm_otool.h"
+#include "libft.h"
 
 inline uint8_t		bswap_8(uint8_t x)
 {
@@ -19,8 +19,7 @@ inline uint8_t		bswap_8(uint8_t x)
 
 inline uint16_t		bswap_16(uint16_t x)
 {
-	return (( (x >> 8) & 0xffu) | (
-					(x & 0xffu) << 8));
+	return (((x >> 8) & 0xffu) | ((x & 0xffu) << 8));
 }
 
 inline uint32_t		bswap_32(uint32_t x)

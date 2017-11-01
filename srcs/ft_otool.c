@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/20 14:08:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 19:45:03 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:33:22 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,29 +20,30 @@ t_cliopts	g_otool_opts[] =
 };
 int			g_rev = 0;
 
-void	otool_single_file(void *file, t_otooldata *data);
-
 void	otool_fat_file(struct fat_header *fat, t_otooldata *data)
 {
-	uint32_t		narch;
-	struct fat_arch	*obj;
+	uint32_t			narch;
+	struct fat_arch		*obj;
+	const NXArchInfo	*arch;
 
 	g_rev = IS_REV(fat);
-	obj = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL);
-	if (obj)
+	if ((obj = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL)))
+	{
+		ft_printf("%s:\n", data->filename);
 		otool_single_file(obj, data);
+	}
 	else
 	{
 		narch = endian(fat->nfat_arch, 32);
 		obj = (struct fat_arch*)(fat + 1);
-		while (narch--)	
+		while (narch--)
 		{
-			const NXArchInfo *arch = NXGetArchInfoFromCpuType(
+			g_rev = IS_REV(fat);
+			arch = NXGetArchInfoFromCpuType(
 					endian(obj->cputype, 32),
 					endian(obj->cpusubtype, 32));
-			ft_printf("\n%s (for architecture %s):\n", data->filename, arch->name);
+			ft_printf("%s (architecture %s):\n", data->filename, arch->name);
 			otool_single_file((void*)fat + endian(obj->offset, 32), data);
-			g_rev = IS_REV(fat);
 			++obj;
 		}
 	}
@@ -50,21 +51,25 @@ void	otool_fat_file(struct fat_header *fat, t_otooldata *data)
 
 void	otool_single_file(void *file, t_otooldata *data)
 {
+	const NXArchInfo *arch;
+
 	g_rev = IS_REV(file);
-	if (IS_MACH_32(file))
-		otool_mach(file, data);
-	else if (IS_MACH_64(file))
-		otool_mach_64(file, data);
-	else
+	arch = NXGetArchInfoFromCpuType(
+			endian(*((int32_t*)file + 1), 32),
+			endian(*((int32_t*)file + 2), 32));
+	if (arch)
 	{
-		const NXArchInfo *arch = NXGetArchInfoFromCpuType(
-				endian(*((int32_t*)file + 1), 32),
-				endian(*((int32_t*)file + 2), 32));
-		if (arch)
-			ft_printf("{red}%s unsupported architecture{eoc}\n", arch->name);
+		if (ft_strcmp(arch->name, "ppc") == 0)
+			otool_ppc(file, data);
+		else if (IS_MACH_32(file))
+			otool_mach(file, data);
+		else if (IS_MACH_64(file))
+			otool_mach_64(file, data);
 		else
-			ft_dprintf(2, "unknown architecture, magic=%#x\n", *((int32_t*)file));
+			ft_printf("{red}%s unsupported architecture{eoc}\n", arch->name);
 	}
+	else
+		ft_dprintf(2, "unknown architecture, magic=%#x\n", *((int32_t*)file));
 }
 
 int		otool(int ac, char **av, t_otooldata data)
@@ -75,12 +80,9 @@ int		otool(int ac, char **av, t_otooldata data)
 	void			*file;
 
 	i = data.av_data - av;
-	while (i < ac && av[i])
+	while (i < ac && (data.filename = av[i]))
 	{
-		ft_printf("%s:\n", av[i]);
-		if ((fd = open((av[i]), O_RDONLY)) < 0)
-			return (1);
-		if ((fstat(fd, &buf)) < 0)
+		if ((fd = open((av[i]), O_RDONLY)) < 0 || fstat(fd, &buf) < 0)
 			return (1);
 		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
 				== MAP_FAILED)
@@ -88,7 +90,10 @@ int		otool(int ac, char **av, t_otooldata data)
 		if (IS_FAT(file))
 			otool_fat_file(file, &data);
 		else
+		{
+			ft_printf("%s:\n", data.filename);
 			otool_single_file(file, &data);
+		}
 		if (munmap(file, buf.st_size))
 			return (1);
 		i++;

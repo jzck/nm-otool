@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:00:40 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 19:58:07 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:37:02 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,21 +38,31 @@ void	*get_segment_64(struct mach_header_64 *file, char *lookup)
 	return (NULL);
 }
 
-void	*get_section_64(void *file, char *segname, char *sectname)
+void	*get_section_64(struct mach_header_64 *file, char *lookup)
 {
+	uint32_t					i;
 	uint32_t					j;
+	struct load_command			*lc;
 	struct segment_command_64	*seg;
 	struct section_64			*sect;
 
-	if (!(seg = get_segment_64(file, segname)))
-		return (NULL);
-	sect = (void*)(seg + 1);
-	j = -1;
-	while (++j < endian(seg->nsects, 32))
+	lc = (void*)(file + 1);
+	i = -1;
+	while (++i < endian(file->ncmds, 32))
 	{
-		if (ft_strcmp(sect->sectname, sectname) == 0)
-			return (sect);
-		sect = sect + 1;
+		if (endian(lc->cmd, 32) & LC_SEGMENT_64)
+		{
+			seg = (struct segment_command_64*)lc;
+			sect = (void*)(seg + 1);
+			j = -1;
+			while (++j < endian(seg->nsects, 32))
+			{
+				if (ft_strcmp(sect->sectname, lookup) == 0)
+					return (sect);
+				sect = sect + 1;
+			}
+		}
+		lc = (void*)lc + endian(lc->cmdsize, 32);
 	}
 	return (NULL);
 }

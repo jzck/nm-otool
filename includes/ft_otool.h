@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:46:23 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 19:15:26 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:19:16 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,7 @@ struct				s_otooldata
 	char			**av_data;
 	char			*filename;
 };
+
+void				otool_single_file(void *file, t_otooldata *data);
 
 #endif

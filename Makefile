@@ -34,8 +34,6 @@ NM_OBJ		=	$(OBJ_DIR)ft_nm.o
 OTOOL_OBJ	=	$(OBJ_DIR)ft_otool.o
 
 SRC_BASE	=	\
-bswap.c\
-dump_symtab.c\
 endianness.c\
 fat.c\
 ft_nm.c\
@@ -57,7 +55,8 @@ mach_64/symbol_64_filter.c\
 mach_64/symbol_64_format.c\
 mach_64/symbol_64_free.c\
 mach_64/symbol_64_init.c\
-mach_64/symbol_64_sort.c
+mach_64/symbol_64_sort.c\
+ppc/otool_ppc.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
 OBJS		=	$(addprefix $(OBJ_DIR), $($(notdir SRC_BASE):.c=.o))

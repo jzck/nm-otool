@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hexdump.c                                          :+:      :+:    :+:   */
+/*   hexdump_int.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/10/07 17:56:14 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:57:09 by jhalford         ###   ########.fr       */
+/*   Created: 2017/11/01 12:57:21 by jhalford          #+#    #+#             */
+/*   Updated: 2017/11/01 12:59:57 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,15 @@ static void	print_hex_contents(void *addr, uint64_t size, int swap)
 		if ((uint64_t)(a - addr) >= size)
 			break ;
 		else if (swap)
-			ft_printf("%02x", bswap_8(*(uint8_t*)a));
+			ft_printf("%08x", bswap_32(*(uint64_t*)a));
 		else
-			ft_printf("%02x", *(uint8_t*)a);
+			ft_printf("%08x", *(uint64_t*)a);
 		ft_putchar(' ');
-		a++;
+		a += 4;
 	}
 }
 
-void		*hexdump(void *addr, uint32_t offset, uint32_t size, int swap)
+void		*hexdump_int(void *addr, uint32_t offset, uint32_t size, int swap)
 {
 	void	*a;
 
@@ -48,7 +48,8 @@ void		*hexdump(void *addr, uint32_t offset, uint32_t size, int swap)
 	return (addr);
 }
 
-void		*hexdump_64(void *addr, uint64_t offset, uint64_t size, int swap)
+void		*hexdump_64_int(void *addr, uint64_t offset, uint64_t size,
+		int swap)
 {
 	void	*a;
 

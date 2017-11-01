@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 19:45:02 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:52:01 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,27 +33,26 @@ t_cliopts	g_nm_opts[] =
 	{0, 0, 0, 0, 0, 0},
 };
 
-void	nm_single_file(void *file, t_nmdata *data);
-
 void	nm_fat_file(struct fat_header *fat, t_nmdata *data)
 {
-	uint32_t		narch;
-	struct fat_arch	*obj;
+	uint32_t			narch;
+	struct fat_arch		*obj;
+	const NXArchInfo	*arch;
 
 	g_rev = IS_REV(fat);
-	obj = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL);
-	if (obj)
+	if ((obj = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL)))
 		nm_single_file(obj, data);
 	else
 	{
 		narch = endian(fat->nfat_arch, 32);
 		obj = (struct fat_arch*)(fat + 1);
-		while (narch--)	
+		while (narch--)
 		{
-			const NXArchInfo *arch = NXGetArchInfoFromCpuType(
+			arch = NXGetArchInfoFromCpuType(
 					endian(obj->cputype, 32),
 					endian(obj->cpusubtype, 32));
-			ft_printf("\n%s (for architecture %s):\n", data->filename, arch->name);
+			ft_printf("\n%s (for architecture %s):\n",
+					data->filename, arch->name);
 			nm_single_file((void*)fat + endian(obj->offset, 32), data);
 			g_rev = IS_REV(fat);
 			++obj;
@@ -63,6 +62,8 @@ void	nm_fat_file(struct fat_header *fat, t_nmdata *data)
 
 void	nm_single_file(void *file, t_nmdata *data)
 {
+	const NXArchInfo *arch;
+
 	g_rev = IS_REV(file);
 	if (IS_MACH_32(file))
 		nm_mach(file, data);
@@ -70,13 +71,13 @@ void	nm_single_file(void *file, t_nmdata *data)
 		nm_mach_64(file, data);
 	else
 	{
-		const NXArchInfo *arch = NXGetArchInfoFromCpuType(
+		arch = NXGetArchInfoFromCpuType(
 				endian(*((int32_t*)file + 1), 32),
 				endian(*((int32_t*)file + 2), 32));
 		if (arch)
 			ft_printf("{red}%s unsupported architecture{eoc}\n", arch->name);
 		else
-			ft_dprintf(2, "unknown architecture, magic=%#x\n", *((int32_t*)file));
+			ft_dprintf(2, "unknown arch: magic=%#x\n", *((int32_t*)file));
 	}
 }
 
@@ -88,13 +89,9 @@ int		nm(int ac, char **av, t_nmdata data)
 	void			*file;
 
 	i = data.av_data - av;
-	while (i < ac && av[i])
+	while (i < ac && (data.filename = av[i]))
 	{
-		g_rev = 0;
-		data.filename = av[i];
-		if ((fd = open((data.filename), O_RDONLY)) < 0)
-			return (1);
-		if ((fstat(fd, &buf)) < 0)
+		if ((fd = open(data.filename, O_RDONLY)) < 0 || fstat(fd, &buf) < 0)
 			return (1);
 		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
 				== MAP_FAILED)

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mach.c                                          :+:      :+:    :+:   */
+/*   mach.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 17:46:14 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:09:52 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void		mach_parse(t_machodata *data)
 	uint32_t				ncmds;
 	uint32_t				i;
 	struct load_command		*lc;
-	struct mach_header	*header;
+	struct mach_header		*header;
 
 	header = data->file;
 	ncmds = endian(header->ncmds, 32);

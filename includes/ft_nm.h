@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:44:40 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/30 12:00:49 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 12:19:05 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,5 +91,7 @@ struct						s_symbolmap
 	char					c;
 	char					*s;
 };
+
+void						nm_single_file(void *file, t_nmdata *data);
 
 #endif
