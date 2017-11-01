@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/01 12:37:07 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 13:11:23 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/01 13:20:07 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,7 @@ void	symbol_64_format_full(t_symbol_64 *symbol)
 			(symbol->nlist.n_type & N_STAB) >> 5,
 			(symbol->nlist.n_type & N_PEXT) >> 4,
 			symbol->nlist.n_type & N_TYPE,
-			symbol->nlist.n_type & N_EXT
-			);
+			symbol->nlist.n_type & N_EXT);
 }
 
 void	symbol_64_format_dfl(t_symbol_64 *symbol)
