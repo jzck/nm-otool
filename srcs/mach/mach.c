@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mach.c                                          :+:      :+:    :+:   */
+/*   mach.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 15:29:43 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:56:16 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ static void	symtab_parse(t_machodata *data, struct symtab_command *symtab)
 
 static void	seg_parse(t_machodata *data, struct segment_command *seg)
 {
-	uint32_t			nsects;
-	uint32_t			i;
+	uint32_t		nsects;
+	uint32_t		i;
 	struct section	*sect;
 
 	nsects = endian(seg->nsects, 32);
@@ -51,9 +51,9 @@ static void	seg_parse(t_machodata *data, struct segment_command *seg)
 
 void		mach_parse(t_machodata *data)
 {
-	uint32_t				ncmds;
-	uint32_t				i;
-	struct load_command		*lc;
+	uint32_t			ncmds;
+	uint32_t			i;
+	struct load_command	*lc;
 	struct mach_header	*header;
 
 	header = data->file->file;

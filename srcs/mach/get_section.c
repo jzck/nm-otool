@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_section.c                                   :+:      :+:    :+:   */
+/*   get_section.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:00:40 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 15:26:47 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:55:25 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	*get_segment(t_machodata *data, char *lookup)
 {
-	uint32_t					i;
-	struct load_command			*lc;
+	uint32_t				i;
+	struct load_command		*lc;
 	struct segment_command	*seg;
-	uint32_t					ncmds;
+	uint32_t				ncmds;
 
 	MC(lc = (void*)((struct mach_header*)data->file->file + 1));
 	i = -1;
@@ -37,9 +37,9 @@ void	*get_segment(t_machodata *data, char *lookup)
 
 void	*get_section(t_machodata *data, char *lookup)
 {
-	uint32_t					i;
-	uint32_t					j;
-	struct load_command			*lc;
+	uint32_t				i;
+	uint32_t				j;
+	struct load_command		*lc;
 	struct segment_command	*seg;
 	struct section			*sect;
 

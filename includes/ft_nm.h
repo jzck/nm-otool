@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:44:40 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 11:57:35 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 16:02:11 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@
 # define NM_OFORMAT		(1 << 9)
 # define NM_MFORMAT		(1 << 10)
 
+typedef struct s_fdata		t_fdata;
 typedef enum e_symtype		t_symtype;
 typedef struct s_symbolmap	t_symbolmap;
 typedef struct s_machodata	t_machodata;

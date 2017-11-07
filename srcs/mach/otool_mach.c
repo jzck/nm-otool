@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   otool_mach.c                                    :+:      :+:    :+:   */
+/*   otool_mach.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:04:06 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 15:27:26 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:55:48 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ extern int g_rev;
 void	otool_mach(t_fdata *data)
 {
 	struct section	*sect;
-	t_machodata			mach;
+	t_machodata		mach;
 
 	mach.file = data;
 	if (data->flag & OTOOL_TEXT)

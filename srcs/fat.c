@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 16:31:48 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 14:29:26 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:55:03 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	*fat_extract(struct fat_header *fat, char *aname)
 {
-	uint32_t		narch;
-	struct fat_arch	*obj;
+	uint32_t			narch;
+	struct fat_arch		*obj;
 	const NXArchInfo	*arch;
 
 	narch = endian(fat->nfat_arch, 32);

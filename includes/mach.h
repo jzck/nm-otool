@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mach.h                                          :+:      :+:    :+:   */
+/*   mach.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:39:31 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 15:26:18 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 16:02:46 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,14 @@
 # define MACH_H
 
 typedef struct s_symbol	t_symbol;
+typedef struct s_fdata	t_fdata;
 
 struct					s_symbol
 {
-	int					pos;
-	t_symtype			type;
-	char				*string;
-	struct nlist		nlist;
+	int				pos;
+	t_symtype		type;
+	char			*string;
+	struct nlist	nlist;
 	struct section	*section;
 };
 

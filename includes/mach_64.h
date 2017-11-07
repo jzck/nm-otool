@@ -6,13 +6,14 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:39:31 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/07 15:26:18 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 16:01:54 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MACH_64_H
 # define MACH_64_H
 
+typedef struct s_fdata	t_fdata;
 typedef struct s_symbol_64	t_symbol_64;
 
 struct					s_symbol_64
