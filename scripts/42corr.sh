@@ -22,10 +22,10 @@ make
 #bibliotheques dynamiques
 ./scripts/nmdiff.sh /usr/lib/libcompression.dylib
 
+
 #biblioteque universelle
 ./scripts/nmdiff.sh /usr/bin/audiodevice
 ./scripts/nmdiff.sh /usr/bin/python
-
 
 
 ##########

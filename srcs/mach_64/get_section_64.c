@@ -6,39 +6,36 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:00:40 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:37:02 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:26:47 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
-void	*get_segment_64(struct mach_header_64 *file, char *lookup)
+void	*get_segment_64(t_machodata *data, char *lookup)
 {
 	uint32_t					i;
 	struct load_command			*lc;
 	struct segment_command_64	*seg;
 	uint32_t					ncmds;
 
-	lc = (void*)(file + 1);
+	MC(lc = (void*)((struct mach_header_64*)data->file->file + 1));
 	i = -1;
-	ncmds = endian(file->ncmds, 32);
-	DG("ncmds=%i", ncmds);
+	ncmds = endian(((struct mach_header_64*)data->file->file)->ncmds, 32);
 	while (++i < ncmds)
 	{
-		DG("i=%i", i);
 		if (endian(lc->cmd, 32) & LC_SEGMENT_64)
 		{
-			seg = (struct segment_command_64*)lc;
-			DG("segment: %s", seg->segname);
+			MC(seg = (struct segment_command_64*)lc);
 			if (ft_strcmp(seg->segname, lookup) == 0)
 				return (seg);
 		}
-		lc = (void*)lc + endian(lc->cmdsize, 32);
+		MC(lc = (void*)lc + endian(lc->cmdsize, 32));
 	}
 	return (NULL);
 }
 
-void	*get_section_64(struct mach_header_64 *file, char *lookup)
+void	*get_section_64(t_machodata *data, char *lookup)
 {
 	uint32_t					i;
 	uint32_t					j;
@@ -46,23 +43,23 @@ void	*get_section_64(struct mach_header_64 *file, char *lookup)
 	struct segment_command_64	*seg;
 	struct section_64			*sect;
 
-	lc = (void*)(file + 1);
+	MC(lc = (void*)((struct mach_header_64*)data->file->file + 1));
 	i = -1;
-	while (++i < endian(file->ncmds, 32))
+	while (++i < endian(((struct mach_header_64*)data->file->file)->ncmds, 32))
 	{
 		if (endian(lc->cmd, 32) & LC_SEGMENT_64)
 		{
-			seg = (struct segment_command_64*)lc;
-			sect = (void*)(seg + 1);
+			MC(seg = (struct segment_command_64*)lc);
+			MC(sect = (void*)(seg + 1));
 			j = -1;
 			while (++j < endian(seg->nsects, 32))
 			{
 				if (ft_strcmp(sect->sectname, lookup) == 0)
 					return (sect);
-				sect = sect + 1;
+				MC(sect = sect + 1);
 			}
 		}
-		lc = (void*)lc + endian(lc->cmdsize, 32);
+		MC(lc = (void*)lc + endian(lc->cmdsize, 32));
 	}
 	return (NULL);
 }

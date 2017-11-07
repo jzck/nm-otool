@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/01 12:37:07 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 13:20:07 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 13:57:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,16 +77,19 @@ void	symbol_64_format_dfl(t_symbol_64 *symbol)
 				symbol->nlist.n_type);
 }
 
-int		symbol_64_format(t_symbol_64 *symbol, t_nmdata *data)
+int		symbol_64_format(t_symbol_64 *symbol, t_fdata *data)
 {
+	int		nbyte;
+
+	nbyte = ft_strstr(__FUNCTION__, "64") ? 16 : 8;
 	if (data->flag & NM_OFORMAT)
 		ft_printf("%s: ", data->filename);
 	if (!(data->flag & NM_ONLY_UNDF))
 	{
 		if (symbol->type == SYM_UNDF)
-			ft_printf("%16s", " ");
+			ft_printf("%*s", nbyte, " ");
 		else
-			ft_printf("%016llx", symbol->nlist.n_value);
+			ft_printf("%0*llx", nbyte, symbol->nlist.n_value);
 		if (data->flag & NM_MFORMAT)
 			symbol_64_format_m(symbol);
 		else if (data->flag & NM_FULL)

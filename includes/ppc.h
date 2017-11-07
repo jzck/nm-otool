@@ -6,13 +6,13 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/01 11:38:10 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 11:38:29 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:29:31 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PPC_H
 # define PPC_H
 
-void	otool_ppc(void *file, t_otooldata *data);
+void	otool_ppc(t_fdata *data);
 
 #endif

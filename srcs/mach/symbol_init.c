@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   symbol_init.c                                      :+:      :+:    :+:   */
+/*   symbol_init.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:07:28 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:36:06 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:30:01 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,15 @@ t_machodata	*g_data;
 int				symbol_init(t_symbol *symbol,
 		char *stringtable, struct nlist *array, int i)
 {
+	size_t		nvaluesize;
+
 	symbol->type = 0;
 	symbol->pos = i;
 	symbol->nlist.n_type = endian(array[i].n_type, 8);
 	symbol->nlist.n_sect = endian(array[i].n_sect, 8);
 	symbol->nlist.n_desc = endian(array[i].n_desc, 16);
-	symbol->nlist.n_value = endian(array[i].n_value, 32);
+	nvaluesize = ft_strstr(__FUNCTION__, "64") ? 64 : 32;
+	symbol->nlist.n_value = endian(array[i].n_value, nvaluesize);
 	symbol->string = stringtable + endian(array[i].n_un.n_strx, 32);
 	return (0);
 }

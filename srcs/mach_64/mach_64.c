@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/23 16:06:44 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:36:21 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:29:43 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@ static void	symtab_64_parse(t_machodata *data, struct symtab_command *symtab)
 	t_symbol_64			symbol;
 	char				*stringtable;
 	struct nlist_64		*array;
+	int					nsyms;
 
 	data->symtab = symtab;
-	stringtable = data->file + endian(symtab->stroff, 32);
-	array = (struct nlist_64*)(data->file + endian(symtab->symoff, 32));
+	MC(stringtable = data->file->file + endian(symtab->stroff, 32));
+	MC(array = (struct nlist_64*)(data->file->file + endian(symtab->symoff, 32)));
+	nsyms = endian(symtab->nsyms, 32);
 	i = -1;
-	while (++i < (int)endian(symtab->nsyms, 32))
+	while (++i < nsyms)
 	{
 		symbol_64_init(&symbol, stringtable, array, i);
 		symbol_64_set(&symbol, data);
@@ -38,12 +40,12 @@ static void	seg_64_parse(t_machodata *data, struct segment_command_64 *seg)
 	struct section_64	*sect;
 
 	nsects = endian(seg->nsects, 32);
-	sect = (void*)(seg + 1);
+	MC(sect = (void*)(seg + 1));
 	i = -1;
 	while (++i < nsects)
 	{
 		ft_lsteadd(&data->sects, ft_lstnew(&sect, sizeof(sect)));
-		sect = sect + 1;
+		MC(sect = sect + 1);
 	}
 }
 
@@ -54,9 +56,9 @@ void		mach_64_parse(t_machodata *data)
 	struct load_command		*lc;
 	struct mach_header_64	*header;
 
-	header = data->file;
+	header = data->file->file;
 	ncmds = endian(header->ncmds, 32);
-	lc = (void*)(header + 1);
+	MC(lc = (void*)(header + 1));
 	i = -1;
 	while (++i < ncmds)
 	{
@@ -64,6 +66,19 @@ void		mach_64_parse(t_machodata *data)
 			symtab_64_parse(data, (struct symtab_command*)lc);
 		else if (endian(lc->cmd, 32) == LC_SEGMENT_64)
 			seg_64_parse(data, (struct segment_command_64*)lc);
-		lc = (void*)lc + endian(lc->cmdsize, 32);
+		MC(lc = (void*)lc + endian(lc->cmdsize, 32));
 	}
+}
+
+void		nm_mach_64(t_fdata *data)
+{
+	t_machodata		mach;
+
+	mach.sects = NULL;
+	mach.symbols = NULL;
+	mach.file = data;
+	mach_64_parse(&mach);
+	symbol_64_sort(&mach.symbols, data->flag);
+	symbol_64_filter(&mach.symbols, data->flag);
+	ft_lstiter(mach.symbols, symbol_64_format, data);
 }

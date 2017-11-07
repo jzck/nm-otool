@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   symbol_format.c                                    :+:      :+:    :+:   */
+/*   symbol_format.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/01 12:33:27 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:33:27 by jhalford         ###   ########.fr       */
+/*   Created: 2017/11/01 12:37:07 by jhalford          #+#    #+#             */
+/*   Updated: 2017/11/07 13:57:06 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,14 +53,13 @@ void	symbol_format_m(t_symbol *symbol)
 
 void	symbol_format_full(t_symbol *symbol)
 {
-	ft_printf("\t%i %03b|%b|%x|%b \t%i(%s) \t%04x",
-			symbol->pos,
+	ft_printf(" %02i(%s)\t %04x %03b|%b|%x|%b \t",
+			symbol->nlist.n_sect, symbol->section->sectname,
+			symbol->nlist.n_desc,
 			(symbol->nlist.n_type & N_STAB) >> 5,
 			(symbol->nlist.n_type & N_PEXT) >> 4,
 			symbol->nlist.n_type & N_TYPE,
-			symbol->nlist.n_type & N_EXT,
-			symbol->nlist.n_sect, symbol->section->sectname,
-			symbol->nlist.n_desc);
+			symbol->nlist.n_type & N_EXT);
 }
 
 void	symbol_format_dfl(t_symbol *symbol)
@@ -78,16 +77,19 @@ void	symbol_format_dfl(t_symbol *symbol)
 				symbol->nlist.n_type);
 }
 
-int		symbol_format(t_symbol *symbol, t_nmdata *data)
+int		symbol_format(t_symbol *symbol, t_fdata *data)
 {
+	int		nbyte;
+
+	nbyte = ft_strstr(__FUNCTION__, "64") ? 16 : 8;
 	if (data->flag & NM_OFORMAT)
 		ft_printf("%s: ", data->filename);
 	if (!(data->flag & NM_ONLY_UNDF))
 	{
 		if (symbol->type == SYM_UNDF)
-			ft_printf("%8s", " ");
+			ft_printf("%*s", nbyte, " ");
 		else
-			ft_printf("%08llx", symbol->nlist.n_value);
+			ft_printf("%0*llx", nbyte, symbol->nlist.n_value);
 		if (data->flag & NM_MFORMAT)
 			symbol_format_m(symbol);
 		else if (data->flag & NM_FULL)
@@ -95,6 +97,8 @@ int		symbol_format(t_symbol *symbol, t_nmdata *data)
 		else
 			symbol_format_dfl(symbol);
 	}
-	ft_printf(" %s\n", symbol->string);
+	ft_putchar(' ');
+	ft_putstr(symbol->string);
+	ft_putchar('\n');
 	return (0);
 }

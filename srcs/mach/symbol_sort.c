@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/27 20:33:02 by jhalford          #+#    #+#             */
-/*   Updated: 2017/10/31 16:32:46 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/10/31 19:05:57 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static int		sym_asort(t_symbol *sym1, t_symbol *sym2)
 static int		sym_nsort(t_symbol *sym1, t_symbol *sym2)
 {
 	if (sym1->nlist.n_value == sym2->nlist.n_value)
-		return (sym_asort(sym1, sym2));
-	return (sym1->nlist.n_value > sym2->nlist.n_value ? 1 : -1);
+		return (ft_strcmp(sym1->string, sym2->string));
+	return (sym1->nlist.n_value - sym2->nlist.n_value);
 }
 
 int				symbol_sort(t_list **syms, t_flag flag)

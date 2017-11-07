@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:44:40 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:19:05 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 11:57:35 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,9 @@
 # define NM_OFORMAT		(1 << 9)
 # define NM_MFORMAT		(1 << 10)
 
-typedef struct s_nmdata		t_nmdata;
 typedef enum e_symtype		t_symtype;
 typedef struct s_symbolmap	t_symbolmap;
 typedef struct s_machodata	t_machodata;
-
-struct						s_nmdata
-{
-	t_flag					flag;
-	char					**av_data;
-	char					*filename;
-};
 
 enum						e_symtype
 {
@@ -79,7 +71,7 @@ enum						e_symtype
 
 struct						s_machodata
 {
-	void					*file;
+	t_fdata					*file;
 	t_list					*sects;
 	t_list					*symbols;
 	struct symtab_command	*symtab;
@@ -92,6 +84,6 @@ struct						s_symbolmap
 	char					*s;
 };
 
-void						nm_single_file(void *file, t_nmdata *data);
+void						nm_single_file(void *file, t_fdata *data);
 
 #endif

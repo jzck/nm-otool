@@ -6,7 +6,7 @@
 #    By: wescande <wescande@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/08/29 21:32:58 by wescande          #+#    #+#              #
-#    Updated: 2017/10/30 12:22:10 by jhalford         ###   ########.fr        #
+#    Updated: 2017/11/07 15:52:38 by jhalford         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,8 +24,7 @@ LIBFT_DIR	=	libft/
 LIBFT_LIB	=	$(LIBFT_DIR)libft.a
 LIBFT_INC	=	$(LIBFT_DIR)includes/
 
-LIBS		=
-
+LIBS		= 
 SRC_DIR		=	srcs/
 INC_DIR		=	includes/
 OBJ_DIR		=	objs/
@@ -40,7 +39,6 @@ ft_nm.c\
 ft_otool.c\
 mach/get_section.c\
 mach/mach.c\
-mach/nm_mach.c\
 mach/otool_mach.c\
 mach/symbol_filter.c\
 mach/symbol_format.c\
@@ -49,13 +47,13 @@ mach/symbol_init.c\
 mach/symbol_sort.c\
 mach_64/get_section_64.c\
 mach_64/mach_64.c\
-mach_64/nm_mach_64.c\
 mach_64/otool_mach_64.c\
 mach_64/symbol_64_filter.c\
 mach_64/symbol_64_format.c\
 mach_64/symbol_64_free.c\
 mach_64/symbol_64_init.c\
 mach_64/symbol_64_sort.c\
+memcheck.c\
 ppc/otool_ppc.c
 
 SRCS		=	$(addprefix $(SRC_DIR), $(SRC_BASE))
@@ -89,7 +87,7 @@ $(LIBFT_LIB):
 	@make -C $(LIBFT_DIR)
 
 $(OBJ_DIR) :
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $@
 	@mkdir -p $(dir $(OBJS))
 
 $(OBJ_DIR)%.o :	$(SRC_DIR)%.c | $(OBJ_DIR)

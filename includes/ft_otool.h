@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/30 11:46:23 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:19:16 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 13:24:50 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,6 @@
 # define OTOOL_TEXT		(1 << 0)
 # define OTOOL_DATA		(1 << 1)
 
-typedef struct s_otooldata		t_otooldata;
-
-struct				s_otooldata
-{
-	t_flag			flag;
-	char			**av_data;
-	char			*filename;
-};
-
-void				otool_single_file(void *file, t_otooldata *data);
+void				otool_single_file(void *file, t_fdata *data);
 
 #endif

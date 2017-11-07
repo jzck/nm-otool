@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mach.h                                             :+:      :+:    :+:   */
+/*   mach.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/01 12:03:56 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:08:34 by jhalford         ###   ########.fr       */
+/*   Created: 2017/10/26 18:39:31 by jhalford          #+#    #+#             */
+/*   Updated: 2017/11/07 15:26:18 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ struct					s_symbol
 	t_symtype			type;
 	char				*string;
 	struct nlist		nlist;
-	struct section		*section;
+	struct section	*section;
 };
 
 int						symbol_init(t_symbol *symbol,
@@ -32,13 +32,11 @@ int						symbol_sort(t_list **syms, t_flag flag);
 int						symbol_filter(t_list **syms, t_flag flag);
 int						is_external(t_symbol *s);
 int						is_not_external(t_symbol *s);
-int						symbol_format(t_symbol *symbol, t_nmdata *data);
-void					*get_section(struct mach_header *file,
-		char *lookup);
+int						symbol_format(t_symbol *symbol, t_fdata *data);
+void					*get_section(t_machodata *data, char *lookup);
 void					mach_parse(t_machodata *data);
 
-void					nm_mach(struct mach_header *file,
-				t_nmdata *data);
-void					otool_mach(void *file, t_otooldata *data);
+void					nm_mach(t_fdata *data);
+void					otool_mach(t_fdata *data);
 
 #endif

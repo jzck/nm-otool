@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/26 18:39:31 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:08:51 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 15:26:18 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,11 @@ int						symbol_64_sort(t_list **syms, t_flag flag);
 int						symbol_64_filter(t_list **syms, t_flag flag);
 int						is_external_64(t_symbol_64 *s);
 int						is_not_external_64(t_symbol_64 *s);
-int						symbol_64_format(t_symbol_64 *symbol, t_nmdata *data);
-void					*get_section_64(struct mach_header_64 *file,
-		char *lookup);
+int						symbol_64_format(t_symbol_64 *symbol, t_fdata *data);
+void					*get_section_64(t_machodata *data, char *lookup);
 void					mach_64_parse(t_machodata *data);
 
-void					nm_mach_64(struct mach_header_64 *file,
-				t_nmdata *data);
-void					otool_mach_64(void *file, t_otooldata *data);
+void					nm_mach_64(t_fdata *data);
+void					otool_mach_64(t_fdata *data);
 
 #endif

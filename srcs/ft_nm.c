@@ -6,7 +6,7 @@
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 03:09:12 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:52:01 by jhalford         ###   ########.fr       */
+/*   Updated: 2017/11/07 14:37:03 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ t_cliopts	g_nm_opts[] =
 	{0, 0, 0, 0, 0, 0},
 };
 
-void	nm_fat_file(struct fat_header *fat, t_nmdata *data)
+void	nm_fat_file(struct fat_header *fat, t_fdata *data)
 {
 	uint32_t			narch;
 	struct fat_arch		*obj;
 	const NXArchInfo	*arch;
 
 	g_rev = IS_REV(fat);
-	if ((obj = fat_extract(fat, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL)))
+	if ((obj = fat_extract(fat, "x86_64")))
 		nm_single_file(obj, data);
 	else
 	{
@@ -60,15 +60,16 @@ void	nm_fat_file(struct fat_header *fat, t_nmdata *data)
 	}
 }
 
-void	nm_single_file(void *file, t_nmdata *data)
+void	nm_single_file(void *file, t_fdata *data)
 {
 	const NXArchInfo *arch;
 
+	data->file = file;
 	g_rev = IS_REV(file);
 	if (IS_MACH_32(file))
-		nm_mach(file, data);
+		nm_mach(data);
 	else if (IS_MACH_64(file))
-		nm_mach_64(file, data);
+		nm_mach_64(data);
 	else
 	{
 		arch = NXGetArchInfoFromCpuType(
@@ -81,28 +82,28 @@ void	nm_single_file(void *file, t_nmdata *data)
 	}
 }
 
-int		nm(int ac, char **av, t_nmdata data)
+int		nm(int ac, char **av, t_fdata data)
 {
 	int				i;
 	struct stat		buf;
 	int				fd;
-	void			*file;
 
 	i = data.av_data - av;
 	while (i < ac && (data.filename = av[i]))
 	{
 		if ((fd = open(data.filename, O_RDONLY)) < 0 || fstat(fd, &buf) < 0)
 			return (1);
-		if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
+		if ((data.file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0))
 				== MAP_FAILED)
 			return (1);
+		data.eof = data.file + buf.st_size;
 		if (!(data.flag & NM_OFORMAT) && ac - (data.av_data - av) > 1)
 			ft_printf("\n%s:\n", data.filename);
-		if (IS_FAT(file))
-			nm_fat_file(file, &data);
+		if (IS_FAT(data.file))
+			nm_fat_file(data.file, &data);
 		else
-			nm_single_file(file, &data);
-		if (munmap(file, buf.st_size))
+			nm_single_file(data.file, &data);
+		if (munmap(data.file, buf.st_size))
 			return (1);
 		i++;
 	}
@@ -111,7 +112,7 @@ int		nm(int ac, char **av, t_nmdata data)
 
 int		main(int ac, char **av)
 {
-	t_nmdata		data;
+	t_fdata		data;
 
 	data.flag = NM_ASORT;
 	if (cliopts_get(av, g_nm_opts, &data))

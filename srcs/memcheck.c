@@ -1,26 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   nm_mach.c                                          :+:      :+:    :+:   */
+/*   memcheck.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jhalford <jack@crans.org>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/10/30 11:03:04 by jhalford          #+#    #+#             */
-/*   Updated: 2017/11/01 12:10:08 by jhalford         ###   ########.fr       */
+/*   Created: 2017/11/07 11:24:09 by jhalford          #+#    #+#             */
+/*   Updated: 2017/11/07 15:19:34 by jhalford         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_nm_otool.h"
 
-void		nm_mach(struct mach_header *file, t_nmdata *data)
+void	memcheck(t_fdata *file, void *ptr, size_t size, const char *function, int line)
 {
-	t_machodata		mach;
-
-	mach.sects = NULL;
-	mach.symbols = NULL;
-	mach.file = file;
-	mach_parse(&mach);
-	symbol_sort(&mach.symbols, data->flag);
-	symbol_filter(&mach.symbols, data->flag);
-	ft_lstiter(mach.symbols, symbol_format, data);
+	if (ptr <= file->file || (ptr + size) >= file->eof)
+	{
+		ft_dprintf(2, "%s:%i ", function, line);
+		ft_dprintf(2, "%s: is corrupted\n", file->filename);
+		ft_dprintf(2, "%p - %p (%zu) - %p --> %zu after end\n", file->file, ptr, size, file->eof, ptr - file->eof);
+		exit(1);
+	}
 }
